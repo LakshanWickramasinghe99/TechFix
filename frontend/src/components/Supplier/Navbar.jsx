@@ -14,9 +14,18 @@ const Navbar = () => {
   // Fetch user data from localStorage on component mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUserName(userData.name || "User");
+    if (storedUser && storedUser !== "undefined") {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUserName(userData.name || "User");
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        setUserName("User"); // Default name if parsing fails
+        // Optionally remove the invalid entry
+        localStorage.removeItem("user");
+      }
+    } else {
+      setUserName("User");
     }
   }, []);
 
@@ -52,11 +61,12 @@ const Navbar = () => {
   return (
     <nav className="bg-[#1c4474] shadow-md">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
-        
         {/* Logo Section */}
         <Link to="/" className="flex items-center space-x-3">
           <img src={Logo} alt="TechFix Logo" className="h-10" />
-          <span className="text-white text-xl font-bold tracking-wide">TECHFIX</span>
+          <span className="text-white text-xl font-bold tracking-wide">
+            TECHFIX
+          </span>
         </Link>
 
         {/* Search Bar (Hidden on mobile, visible on medium+ screens) */}
@@ -73,9 +83,21 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-8 text-white text-lg font-medium">
-          <li><Link to="/" className="hover:text-gray-200 transition">Home</Link></li>
-          <li><Link to="/products" className="hover:text-gray-200 transition">Products</Link></li>
-          <li><Link to="/quotations" className="hover:text-gray-200 transition">Quotations</Link></li>
+          <li>
+            <Link to="/" className="hover:text-gray-200 transition">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link to="/products" className="hover:text-gray-200 transition">
+              Products
+            </Link>
+          </li>
+          <li>
+            <Link to="/quotations" className="hover:text-gray-200 transition">
+              Quotations
+            </Link>
+          </li>
         </ul>
 
         {/* Profile Section */}
@@ -99,8 +121,18 @@ const Navbar = () => {
                 className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2"
               >
                 <p className="px-4 py-2 font-semibold">{userName}</p>
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">Profile</Link>
-                <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-200">Logout</button>
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 hover:bg-gray-200"
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-200"
+                >
+                  Logout
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -138,12 +170,30 @@ const Navbar = () => {
             </div>
 
             <ul className="space-y-2">
-              <li><Link to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
-              <li><Link to="/products" onClick={() => setIsOpen(false)}>Products</Link></li>
-              <li><Link to="/quotations" onClick={() => setIsOpen(false)}>Quotations</Link></li>
-              <li><Link to="/profile" onClick={() => setIsOpen(false)}>Profile</Link></li>
               <li>
-                <button onClick={handleLogout} className="w-full text-left">Logout</button>
+                <Link to="/" onClick={() => setIsOpen(false)}>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" onClick={() => setIsOpen(false)}>
+                  Products
+                </Link>
+              </li>
+              <li>
+                <Link to="/quotations" onClick={() => setIsOpen(false)}>
+                  Quotations
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" onClick={() => setIsOpen(false)}>
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <button onClick={handleLogout} className="w-full text-left">
+                  Logout
+                </button>
               </li>
             </ul>
           </motion.div>
