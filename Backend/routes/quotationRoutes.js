@@ -1,12 +1,19 @@
 const express = require('express');
-const { authenticate } = require('../middleware/authMiddleware');
-const { createQuotation, getQuotations, updateQuotationStatus } = require('../controllers/quotationController');
+const {
+    createQuotation,
+    getQuotations,
+    getQuotationById,
+    updateQuotation,
+    deleteQuotation
+} = require('../controllers/quotationController'); // Ensure correct path
 const {createTechQuotation,getAllTechQuotations,deleteTechQuotation} = require('../controllers/TechQuatationController');
 const router = express.Router();
 
-router.post('/create', authenticate, createQuotation);
-router.get('/all', authenticate, getQuotations);
-router.put('/update/:id', authenticate, updateQuotationStatus);
+router.post('/create', createQuotation);
+router.get('/all', getQuotations);
+router.get('/:id', getQuotationById);
+router.put('/:id', updateQuotation);
+router.delete('/:id', deleteQuotation);
 
 router.post('/techfix/create', createTechQuotation);
 router.get('/techfix/all', getAllTechQuotations);
