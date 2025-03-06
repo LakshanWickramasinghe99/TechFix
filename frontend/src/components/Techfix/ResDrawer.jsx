@@ -12,8 +12,11 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import SettingsIcon from '@mui/icons-material/Settings';
+import GroupIcon from '@mui/icons-material/Group';
 import LogoutIcon from '@mui/icons-material/Logout';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 
 const drawerWidth = 200;
 
@@ -39,47 +42,83 @@ export default function SidebarMenu() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+  <CssBaseline />
+  {/* Open Drawer Button */}
+  <IconButton
+    color="inherit"
+    aria-label="open drawer"
+    onClick={handleDrawerOpen}
+    sx={{
+      position: 'absolute',
+      top: 16,
+      left: 16,
+      zIndex: 1200,
+      color: '#2C3E50', // Dark Gray
+      backgroundColor: '#F5F5F5', // Light Gray
+      '&:hover': {
+        backgroundColor: '#E0E0E0', // Slightly darker gray on hover
+      },
+    }}
+  >
+    <MenuIcon fontSize="medium" />
+  </IconButton>
+
+  {/* Drawer */}
+  <Drawer
+    sx={{
+      width: drawerWidth,
+      flexShrink: 0,
+      '& .MuiDrawer-paper': {
+        width: drawerWidth,
+        boxSizing: 'border-box',
+        backgroundColor: '#2C3E50', // Dark Gray
+        color: '#FFFFFF', // White text
+      },
+    }}
+    variant="persistent"
+    anchor="left"
+    open={open}
+  >
+    {/* Drawer Header */}
+    <DrawerHeader>
       <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        onClick={handleDrawerOpen}
-        sx={{ position: 'absolute', top: 16, left: 16 }}
-      >
-        <MenuIcon fontSize="medium" />
-      </IconButton>
-      <Drawer
+        onClick={handleDrawerClose}
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
+          color: '#FFFFFF', // White
+          '&:hover': {
+            backgroundColor: '#394B5F', // Slightly lighter dark gray
           },
         }}
-        variant="persistent"
-        anchor="left"
-        open={open}
       >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <List>
-          {[
-            { text: 'Suppliers', icon: <SettingsIcon />, link: '/suppliers' },
-            { text: 'Logout', icon: <LogoutIcon />, link: '/logout' },
-          ].map((item) => (
-            <ListItem key={item.text} disablePadding>
-              <ListItemButton component="a" href={item.link}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    </Box>
+        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+      </IconButton>
+    </DrawerHeader>
+
+    {/* Drawer List */}
+    <List>
+      {[
+        { text: 'Our Products', icon: <InventoryIcon />, link: '/techFixProducts' },
+        { text: 'Suppliers', icon: <GroupIcon />, link: '/suppliers' },
+        { text: 'Quotation Management', icon: <RequestQuoteIcon />, link: '/quotation' },
+        { text: 'Suppliers Products', icon: <ManageSearchIcon />, link: '/product' },
+      ].map((item) => (
+        <ListItem key={item.text} disablePadding>
+          <ListItemButton
+            component="a"
+            href={item.link}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#394B5F', // Slightly lighter dark gray
+              },
+            }}
+          >
+            <ListItemIcon sx={{ color: '#FFFFFF' }}>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+  </Drawer>
+</Box>
   );
 }

@@ -1,6 +1,8 @@
 const Product = require('../models/Product');
 
 exports.addProduct = async (req, res) => {
+ 
+
   try {
     const { name, category, price, stock, supplierId } = req.body;
     const image = req.file ? req.file.path : null;
@@ -45,6 +47,17 @@ exports.updateProduct = async (req, res) => {
         return res.status(404).json({ msg: 'Product not found' });
       }
       res.json({ msg: 'Product deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
+    }
+  };
+
+   // Function to search products by name
+   exports.searchProductsByName = async (req, res) => {
+    try {
+      const { query } = req.query;
+      const products = await Product.find({ name: { $regex: query, $options: 'i' } });
+      res.json(products);
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }

@@ -9,8 +9,8 @@ const Header = () => {
       
         <Drawer />
         <div className="container mx-auto flex items-center justify-between p-3">
-        <img src={logo} alt="TechFix Logo" className="h-12 pl-16" />
-        <h1 className="text-3xl font-extrabold">TechFix Shop</h1>
+        <img src={logo} alt="TechFix Logo" className="h-16 mx-auto" />
+        {/* <h1 className="text-3xl font-extrabold">TechFix Shop</h1> */}
         <nav>
           <ul className="flex space-x-6">
             <li>

@@ -36,3 +36,23 @@ exports.loginSupplier = async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 };
+
+exports.getAllSuppliers = async (req, res) => {
+  try {
+    const suppliers = await Supplier.find();
+    return res.status(200).json({
+      status: "success",
+      message: "Suppliers retrieved successfully.",
+      data: suppliers,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      message: "Error retrieving active requests.",
+      errors: {
+        code: 500,
+        description: error.message,
+      },
+    });
+  }
+};

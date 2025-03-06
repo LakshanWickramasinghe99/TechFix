@@ -1,53 +1,58 @@
-import React, { useState } from 'react';
-import Header from './Header';
+import React, { useState } from "react";
+import Header from "./Header";
+import { useEffect } from "react";
+import { getAllSuppliers } from "../Services/TechFix";
 
 const Suppliers = () => {
-    const [suppliers, setSuppliers] = useState([
-        { id: 1, name: 'Supplier 1', details: 'Details of Supplier 1' },
-        { id: 2, name: 'Supplier 2', details: 'Details of Supplier 2' },
-        // Add more suppliers as needed
-    ]);
+  const [suppliers, setSuppliers] = useState([]);
 
-    const handleEdit = (id) => {
-        // Handle edit logic here
-        console.log(`Edit supplier with id: ${id}`);
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const allSuppliers = await getAllSuppliers();
+        console.log("Suppliers:", allSuppliers);
+        setSuppliers(allSuppliers);
+      } catch (error) {
+        console.error("Error fetching suppliers:", error);
+      }
     };
 
-    const handleAddSupplier = () => {
-        // Handle add supplier logic here
-        console.log('Add new supplier');
-    };
+    fetchSuppliers();
+  }, []);
 
-    return (
-        <div>
-        <Header />
-        <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Suppliers</h1>
-                <button
-                    onClick={handleAddSupplier}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                    Add Supplier
-                </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {suppliers.map((supplier) => (
-                    <div key={supplier.id} className="bg-white p-4 rounded shadow">
-                        <h2 className="text-xl font-semibold">{supplier.name}</h2>
-                        <p className="text-gray-600">{supplier.details}</p>
-                        <button
-                            onClick={() => handleEdit(supplier.id)}
-                            className="mt-2 bg-green-500 text-white px-4 py-2 rounded"
-                        >
-                            Edit
-                        </button>
-                    </div>
-                ))}
-            </div>
+  const handleEdit = (id) => {
+    // Handle edit logic here
+    console.log(`Edit supplier with id: ${id}`);
+  };
+
+  const handleAddSupplier = () => {
+    // Handle add supplier logic here
+    console.log("Add new supplier");
+  };
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+  <Header />
+  <div className="p-4">
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="text-2xl font-bold text-gray-800">Suppliers</h1>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {suppliers.map((supplier) => (
+        <div
+          key={supplier.id}
+          className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">{supplier.name}</h2>
+          <p className="text-gray-600 mb-1"><span className="font-medium">Email:</span> {supplier.email}</p>
+          <p className="text-gray-600 mb-1"><span className="font-medium">Phone:</span> {supplier.phone}</p>
+          <p className="text-gray-600"><span className="font-medium">Address:</span> {supplier.address}</p>
         </div>
-        </div>
-    );
+      ))}
+    </div>
+  </div>
+</div>
+  );
 };
 
 export default Suppliers;

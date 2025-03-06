@@ -7,6 +7,9 @@ const ProductSchema = new mongoose.Schema({
   stock: Number,
   supplierId: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' },
   image: String,
+  description: String
 });
+
+
 
 module.exports = mongoose.model('Product', ProductSchema);

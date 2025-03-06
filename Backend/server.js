@@ -1,6 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const app = express();
 
@@ -8,6 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use('/uploads', express.static('uploads'));
+
+// Serve static files from the 'techFixUpload' directory
+app.use('/techFixUpload', express.static(path.join(__dirname, 'techFixUpload')));
+
 
 // Connect Database
 connectDB();
