@@ -1,4 +1,4 @@
-const Quotation = require('../models/Quotation');
+const Quotation = require("../models/Quotation");
 
 // Create a new quotation
 exports.createQuotation = async (req, res) => {

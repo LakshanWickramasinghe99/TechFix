@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const supplierRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const quotationRoutes = require('./routes/quotationRoutes');
@@ -36,6 +37,10 @@ app.use(session({
 
 // Serve uploaded images
 app.use('/uploads', express.static('uploads')); 
+
+// Serve static files from the 'techFixUpload' directory
+app.use('/techFixUpload', express.static(path.join(__dirname, 'techFixUpload')));
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
