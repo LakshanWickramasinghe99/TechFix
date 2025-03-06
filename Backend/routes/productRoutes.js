@@ -1,11 +1,14 @@
 const express = require('express');
-const { addProduct, getProducts, updateProduct, deleteProduct } = require('../controllers/productController');
-const upload = require('../middleware/uploadMiddleware');
-const router = express.Router();
+const productController = require('../controllers/productController'); // Import the controller
 
-router.post('/add', upload.single('image'), addProduct);
-router.get('/all', getProducts);
-router.put('/update/:id', upload.single('image'), updateProduct);
-router.delete('/delete/:id', deleteProduct); // This line was causing the error
+const router = express.Router();  // Create router instance
 
+// Define the routes and use the controller's methods
+router.post('/create', productController.postCreate);  // Route for creating a product
+router.get('/all', productController.getAllProducts); // Get all products for the logged-in supplier
+router.get('/:id', productController.getProductById); // Get a specific product by ID
+router.put('/:id', productController.updateProductById); // Update product by ID
+router.delete('/:id', productController.deleteProductById); // Delete product by ID
+
+// Export the router
 module.exports = router;
