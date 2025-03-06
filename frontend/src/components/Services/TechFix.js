@@ -5,25 +5,12 @@ const base_url = import.meta.env.VITE_BASE_URL;
 // Get all suppliers
 export const getAllSuppliers = async () => {
   try {
-    const response = await axios.post(`${base_url}/auth/getAllSuppliers`);
-    console.log("Response:", response); // Log the entire response for debugging
-    const data = response.data.data;
-
-    if (!data) {
-      throw new Error("No data found in response");
-    }
-
-    const suppliers = data.map((supplier) => ({
-      id: supplier._id,
-      name: supplier.name,
-      email: supplier.email,
-      phone: supplier.phone,
-      address: supplier.address,
-    }));
-
-    return suppliers;
+    const response = await axios.get(`${base_url}/suppliers/all`);
+    console.log("Response data:", response.data); // Log the response data for debugging
+    return response.data; // Return the entire response data
   } catch (error) {
-    console.error("Error fetching suppliers:", error);
+    console.error("Error fetching suppliers:", error.message);
+    return { suppliers: [] }; // Return an object with an empty array in case of error
   }
 };
 
@@ -49,7 +36,7 @@ export const addTechFixProduct = async (product) => {
 // get all products from techfix
 export const getTechFixProducts = async () => {
   try {
-    const response = await axios.get(`${base_url}/products/techfix/all`);
+    const response = await axios.get(`${base_url}/product/techfix/all`);
     console.log("Response:", response); // Log the entire response for debugging
     return response.data;
   } catch (error) {
@@ -60,7 +47,10 @@ export const getTechFixProducts = async () => {
 //create quatation
 export const createQuotation = async (quotation) => {
   try {
-    const response = await axios.post(`${base_url}/quotations/techfix/create`, quotation);
+    const response = await axios.post(
+      `${base_url}/quotations/techfix/create`,
+      quotation
+    );
     console.log("Response:", response); // Log the entire response for debugging
     return response.data;
   } catch (error) {

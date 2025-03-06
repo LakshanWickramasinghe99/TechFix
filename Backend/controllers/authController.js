@@ -88,14 +88,14 @@ exports.getSupplierById = async (req, res) => {
 };
 
 // Get All Suppliers
-exports.getAllSuppliers = async (req, res) => {
-  try {
-    const suppliers = await Supplier.find().select("-password");
-    res.json({ suppliers });
-  } catch (error) {
-    res.status(500).json({ msg: "Error retrieving suppliers", error: error.message });
-  }
-};
+// exports.getAllSuppliers = async (req, res) => {
+//   try {
+//     const suppliers = await Supplier.find().select("-password");
+//     res.json({ suppliers });
+//   } catch (error) {
+//     res.status(500).json({ msg: "Error retrieving suppliers", error: error.message });
+//   }
+// };
 
 // Update Supplier
 exports.updateSupplierById = async (req, res) => {
@@ -132,22 +132,12 @@ exports.deleteSupplier = async (req, res) => {
   }
 };
 
+// Get All Suppliers
 exports.getAllSuppliers = async (req, res) => {
   try {
-    const suppliers = await Supplier.find();
-    return res.status(200).json({
-      status: "success",
-      message: "Suppliers retrieved successfully.",
-      data: suppliers,
-    });
+    const suppliers = await Supplier.find()
+    res.json({ suppliers });
   } catch (error) {
-    return res.status(400).json({
-      status: "error",
-      message: "Error retrieving active requests.",
-      errors: {
-        code: 500,
-        description: error.message,
-      },
-    });
+    res.status(500).json({ msg: "Error retrieving suppliers", error: error.message });
   }
 };
