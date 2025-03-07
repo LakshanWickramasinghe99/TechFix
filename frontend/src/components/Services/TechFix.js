@@ -81,3 +81,24 @@ export const getAllQuotations = async () => {
   }
 }
 
+//get tech quotations
+export const getTechQuotations = async () => {
+  try {
+    const response = await axios.get(`${base_url}/quotation/techfix/all`);
+    console.log("Response:", response); // Log the entire response for debugging
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quotations:", error);
+  }
+};
+
+//delete quotation
+export const deleteQuotation = async (id) => {
+  try {
+    const response = await axios.delete(`${base_url}/quotation/delete/${id}`);
+    console.log("Response:", response); // Log the entire response for debugging
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting quotation:", error);
+  }
+};

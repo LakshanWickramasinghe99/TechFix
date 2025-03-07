@@ -4,7 +4,6 @@ const techUpload = require('../middleware/techFixUpload');
 const productController = require('../controllers/productController'); // Import the controller
 
 const router = express.Router();
-const productController = require('../controllers/productController');
 
 router.post('/create', productController.postCreate);  // Route for creating a product
 router.get('/all', productController.getAllProducts); // Get all products for the logged-in supplier
@@ -20,5 +19,8 @@ router.put('/:id', productController.updateProductById);
 
 // Delete product by ID
 router.delete('/:id', productController.deleteProductById);
+
+router.get('/techfix/all', getTechFixProducts);
+router.post('/techfix/add', techUpload.single('image'), addTechFixProduct);
 
 module.exports = router;

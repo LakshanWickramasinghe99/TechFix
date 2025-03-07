@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllTechQuotations, deleteTechQuotation } from "../Services/TechFix";
+import { getTechQuotations, deleteQuotation } from "../Services/TechFix";
 import Header from "./Header";
 
 const PastQuotation = () => {
@@ -11,7 +11,7 @@ const PastQuotation = () => {
 
   const fetchQuotations = async () => {
     try {
-      const data = await getAllTechQuotations();
+      const data = await getTechQuotations();
       if (data && Array.isArray(data.quotations)) {
         setQuotations(data.quotations);
       } else {
@@ -24,7 +24,7 @@ const PastQuotation = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteTechQuotation(id);
+      await deleteQuotation(id);
       fetchQuotations(); // Refresh the list after deletion
     } catch (error) {
       console.error("Error deleting quotation:", error);

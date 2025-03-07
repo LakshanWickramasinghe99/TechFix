@@ -64,6 +64,14 @@ const RequestQuotation = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
   <Header />
+  <div className="flex justify-end p-4">
+    <button
+      onClick={() => window.location.href = "/pastQuotation"}
+      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+    >
+      View Past Quotations
+    </button>
+  </div>
   <form onSubmit={handleSubmit} className="p-4 max-w-4xl mx-auto">
     {/* Search Input */}
     <input
