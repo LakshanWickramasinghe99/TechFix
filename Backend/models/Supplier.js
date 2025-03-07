@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const SupplierSchema = new mongoose.Schema({
-  supplierId: { type: String, unique: true, required: true }, // Ensure it's a string
+  supplierId: { type: String, unique: true, required: true },
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },

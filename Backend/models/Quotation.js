@@ -11,7 +11,8 @@ const QuotationSchema = new mongoose.Schema({
         }
     ],
     totalPrice: { type: Number, required: true }, // New field for total price
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    supplierId: { type: String, required: true }
 });
 
 module.exports = mongoose.model('Quotation', QuotationSchema);

@@ -1,19 +1,20 @@
 const express = require('express');
-const { addTechFixProduct, getTechFixProducts } = require('../controllers/TechFixProductController');
-const techUpload = require('../middleware/techFixUpload');
-const productController = require('../controllers/productController'); // Import the controller
 const router = express.Router();
+const productController = require('../controllers/productController');
 
-// Define the routes and use the controller's methods
-router.post('/create', productController.postCreate);  // Route for creating a product
-router.get('/all', productController.getAllProducts); // Get all products for the logged-in supplier
-router.get('/:id', productController.getProductById); // Get a specific product by ID
-router.put('/:id', productController.updateProductById); // Update product by ID
-router.delete('/:id', productController.deleteProductById); // Delete product by ID
+// Create product (only for logged-in suppliers)
+router.post('/create', productController.postCreate);
 
-//techFix routes
-router.post('/techfix/add', techUpload.single('image'), addTechFixProduct);
-router.get('/techfix/all', getTechFixProducts);
+// Get all products for a specific supplier
+router.get('/', productController.getAllProducts);
 
-// Export the router
+// Get a single product by ID
+router.get('/:id', productController.getProductById);
+
+// Update product by ID
+router.put('/:id', productController.updateProductById);
+
+// Delete product by ID
+router.delete('/:id', productController.deleteProductById);
+
 module.exports = router;
