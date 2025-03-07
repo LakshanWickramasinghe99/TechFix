@@ -70,3 +70,14 @@ export const getSupProducts = async () => {
 };
 
 
+//get all quotations
+export const getAllQuotations = async () => {
+  try {
+    const response = await axios.get(`${base_url}/quotation/all`);
+    console.log("Response:", response); // Log the entire response for debugging
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quotations:", error);
+  }
+}
+

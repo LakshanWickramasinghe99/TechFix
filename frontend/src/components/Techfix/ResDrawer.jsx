@@ -18,6 +18,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 
+
 const drawerWidth = 200;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -101,6 +102,7 @@ export default function SidebarMenu() {
         { text: 'Suppliers', icon: <GroupIcon />, link: '/suppliers' },
         { text: 'Quotation Management', icon: <RequestQuoteIcon />, link: '/quotation' },
         { text: 'Suppliers Products', icon: <ManageSearchIcon />, link: '/product' },
+        { text: 'Quotation Comparison', icon: <LogoutIcon />, link: '/compareQuotations' },
       ].map((item) => (
         <ListItem key={item.text} disablePadding>
           <ListItemButton

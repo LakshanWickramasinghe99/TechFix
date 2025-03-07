@@ -21,6 +21,7 @@ import Suppliers from "./components/Techfix/Suppliers";
 import Quotation from "./components/Techfix/RequestQuotation";
 import Product from "./components/Techfix/Products";
 import TechFixProducts from "./components/Techfix/TechFixProducts";
+import CompQuotation from './components/Techfix/CompareQuotations';
 
 const App = () => {
   return (
@@ -38,7 +39,8 @@ const AppContent = () => {
     "/quotation",
     "/product",
     "/techFixProducts",
-    "/"
+    "/",
+    "/compareQuotations"
   ];
 
   return (
@@ -67,6 +69,7 @@ const AppContent = () => {
           <Route path="/quotation" element={<Quotation />} />
           <Route path="/product" element={<Product />} />
           <Route path="/techFixProducts" element={<TechFixProducts />} />
+          <Route path="/compareQuotations" element={<CompQuotation />} />
         </Routes>
       </main>
     </div>
