@@ -143,12 +143,12 @@ const deleteProductById = async (req, res) => {
   }
 };
 
-
-// Get all supplier products (to view all products)
+//get all products
 const getSupProducts = async (req, res) => {
   try {
-    const product = await Product.find();
-    res.json(product);
+    const products = await Product.find();
+    res.json(products);
+
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }

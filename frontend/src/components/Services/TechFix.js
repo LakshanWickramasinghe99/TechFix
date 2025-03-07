@@ -18,7 +18,7 @@ export const getAllSuppliers = async () => {
 export const addTechFixProduct = async (product) => {
   try {
     const response = await axios.post(
-      `${base_url}/products/techfix/add`,
+      `${base_url}/product/techfix/add`,
       product,
       {
         headers: {
@@ -48,7 +48,7 @@ export const getTechFixProducts = async () => {
 export const createQuotation = async (quotation) => {
   try {
     const response = await axios.post(
-      `${base_url}/quotations/techfix/create`,
+      `${base_url}/quotation/techfix/create`,
       quotation
     );
     console.log("Response:", response); // Log the entire response for debugging
@@ -57,3 +57,27 @@ export const createQuotation = async (quotation) => {
     console.error("Error creating quotation:", error);
   }
 };
+
+//get all products
+export const getSupProducts = async () => {
+  try {
+    const response = await axios.get(`${base_url}/product/techFix/search`);
+    console.log("Response:", response); // Log the entire response for debugging
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+
+
+//get all quotations
+export const getAllQuotations = async () => {
+  try {
+    const response = await axios.get(`${base_url}/quotation/all`);
+    console.log("Response:", response); // Log the entire response for debugging
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quotations:", error);
+  }
+}
+

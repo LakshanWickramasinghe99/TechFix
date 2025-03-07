@@ -22,6 +22,7 @@ import Suppliers from "./components/Techfix/Suppliers";
 import Quotation from "./components/Techfix/RequestQuotation";
 import Product from "./components/Techfix/Products";
 import TechFixProducts from "./components/Techfix/TechFixProducts";
+import CompQuotation from './components/Techfix/CompareQuotations';
 
 const App = () => {
   return (
@@ -39,6 +40,8 @@ const AppContent = () => {
     "/quotation",
     "/product",
     "/techFixProducts",
+    "/",
+    "/compareQuotations"
   ];
 
   return (
@@ -46,13 +49,15 @@ const AppContent = () => {
       {!noNavbarRoutes.includes(location.pathname) && <Navbar />}
       <main className="flex-grow">
         <Routes>
-          {/* Supplier Routes */}
-          <Route path="/" element={<Home />} />
+
+
+          <Route path="/home" element={<Home />} />
+
           <Route path="/products" element={<Products />} />
           <Route path="/create-product" element={<ProductForm isEdit={false} />} />
           <Route path="/quotations" element={<Quotations />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-quotation" element={<CreateQuotation />} />
           <Route path="/edit-quotation/:id" element={<EditQuotation />} />
@@ -63,6 +68,7 @@ const AppContent = () => {
           <Route path="/quotation" element={<Quotation />} />
           <Route path="/product" element={<Product />} />
           <Route path="/techFixProducts" element={<TechFixProducts />} />
+          <Route path="/compareQuotations" element={<CompQuotation />} />
         </Routes>
       </main>
       {!noNavbarRoutes.includes(location.pathname) && <Footer />}

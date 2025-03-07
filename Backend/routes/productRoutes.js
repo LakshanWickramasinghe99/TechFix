@@ -1,10 +1,14 @@
 const express = require('express');
+const { addTechFixProduct, getTechFixProducts,getSupProducts } = require('../controllers/TechFixProductController');
+const techUpload = require('../middleware/techFixUpload');
+const productController = require('../controllers/productController'); // Import the controller
+
 const router = express.Router();
 const productController = require('../controllers/productController');
 
-// Create product (only for logged-in suppliers)
-router.post('/create', productController.postCreate);
-
+router.post('/create', productController.postCreate);  // Route for creating a product
+router.get('/all', productController.getAllProducts); // Get all products for the logged-in supplier
+router.get('/techFix/search', productController.getSupProducts);
 // Get all products for a specific supplier
 router.get('/', productController.getAllProducts);
 
