@@ -38,6 +38,7 @@ const AppContent = () => {
     "/quotation",
     "/product",
     "/techFixProducts",
+    "/"
   ];
 
   return (
@@ -45,7 +46,7 @@ const AppContent = () => {
       {!noNavbarRoutes.includes(location.pathname) && <Navbar />}
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route
             path="/create-product"
@@ -57,7 +58,7 @@ const AppContent = () => {
           />
           <Route path="/quotations" element={<Quotations />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-quotation" element={<CreateQuotation />} />
           <Route path="/edit-quotation/:id" element={<EditQuotation />} />

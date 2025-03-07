@@ -14,7 +14,7 @@ const Header = () => {
         <nav>
           <ul className="flex space-x-6">
             <li>
-              <a href="/" className="size-96 text-white hover:text-blue-400 ">
+              <a href="/techHome" className="size-96 text-white hover:text-blue-400 ">
                 <HomeIcon sx={{ fontSize: 30 }} />
               </a>
             </li>
