@@ -1,182 +1,193 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom"; // Use useNavigate instead of useHistory
-import { FaSave, FaImage } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const EditProduct = () => {
+const ProductForm = ({ isEdit, productId }) => {
   const [product, setProduct] = useState({
-    name: "",
-    description: "",
-    price: "",
-    stock: "",
-    category: "",
-    image: "",
+    name: '',
+    description: '',
+    price: '',
+    stock: '',
+    category: '',
+    image: null,
+    supplierId: localStorage.getItem('supplierId'),
   });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [imagePreview, setImagePreview] = useState(null);
-  const { id } = useParams(); // Product ID from URL
-  const navigate = useNavigate(); // useNavigate hook
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
+  // Fetch product data if editing
   useEffect(() => {
-    fetchProduct();
-  }, [id]);
-
-  // Fetch product details by ID
-  const fetchProduct = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/product/${id}`);
-      setProduct(response.data);
-      setImagePreview(response.data.image ? `http://localhost:5000/uploads/${response.data.image}` : null);
-    } catch (err) {
-      setError("Error fetching product.");
+    if (isEdit && productId) {
+      axios
+        .get(`http://localhost:5000/api/product/${productId}`) // Correct URL to fetch product data by productId
+        .then((response) => {
+          setProduct(response.data);
+        })
+        .catch((err) => {
+          setError('Failed to load product data.');
+        });
     }
-  };
+  }, [isEdit, productId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prevProduct) => ({
-      ...prevProduct,
+    setProduct((prevState) => ({
+      ...prevState,
       [name]: value,
     }));
   };
 
-  const handleFileChange = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setProduct((prevProduct) => ({
-      ...prevProduct,
+    setProduct((prevState) => ({
+      ...prevState,
       image: file,
     }));
-    setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const formData = new FormData();
-    formData.append("name", product.name);
-    formData.append("description", product.description);
-    formData.append("price", product.price);
-    formData.append("stock", product.stock);
-    formData.append("category", product.category);
+    formData.append('name', product.name);
+    formData.append('description', product.description);
+    formData.append('price', product.price);
+    formData.append('stock', product.stock);
+    formData.append('category', product.category);
+    formData.append('supplierId', product.supplierId); // Supplier ID from localStorage
+
     if (product.image) {
-      formData.append("image", product.image);
+      formData.append('image', product.image);
     }
 
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/api/product/${id}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      setSuccess("Product updated successfully!");
-      setTimeout(() => {
-        navigate("/products"); // Use navigate to redirect after success
-      }, 2000);
-    } catch (err) {
-      setError("Error updating product.");
-    }
+    const url = isEdit
+      ? `http://localhost:5000/api/product/${productId}` // Correct URL for editing
+      : 'http://localhost:5000/api/product/create'; // URL for creating new product
+    const method = isEdit ? 'put' : 'post';
+
+    axios({
+      method,
+      url,
+      data: formData,
+    })
+      .then((response) => {
+        setLoading(false);
+        navigate('/products'); // Redirect to the product list
+      })
+      .catch((err) => {
+        setLoading(false);
+        setError(err.response?.data?.msg || 'Error saving product.');
+      });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 p-6 flex flex-col items-center relative">
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-8 tracking-wide">
-        Edit Product
-      </h1>
-
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">{success}</p>}
-
-      <form
-        className="bg-white shadow-xl rounded-2xl p-6 flex flex-col gap-6 w-full max-w-md"
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <label className="block text-gray-700">Product Name</label>
-          <input
-            type="text"
-            name="name"
-            value={product.name}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded-md"
-            required
-          />
+    <div className="max-w-3xl mx-auto p-8 bg-white shadow-lg rounded-lg space-y-8">
+      <h2 className="text-3xl font-bold text-gray-900 text-center">
+        {isEdit ? 'Edit Product' : 'Create Product'}
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label htmlFor="name" className="block text-lg font-semibold text-gray-700">
+              Product Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={product.name}
+              onChange={handleChange}
+              required
+              className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="price" className="block text-lg font-semibold text-gray-700">
+              Price ($)
+            </label>
+            <input
+              id="price"
+              name="price"
+              type="number"
+              value={product.price}
+              onChange={handleChange}
+              required
+              className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
         </div>
 
         <div>
-          <label className="block text-gray-700">Description</label>
+          <label htmlFor="description" className="block text-lg font-semibold text-gray-700">
+            Description
+          </label>
           <textarea
+            id="description"
             name="description"
             value={product.description}
             onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded-md"
             required
+            rows="4"
+            className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
-        <div>
-          <label className="block text-gray-700">Price</label>
-          <input
-            type="number"
-            name="price"
-            value={product.price}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded-md"
-            required
-          />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label htmlFor="category" className="block text-lg font-semibold text-gray-700">
+              Category
+            </label>
+            <input
+              id="category"
+              name="category"
+              type="text"
+              value={product.category}
+              onChange={handleChange}
+              required
+              className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="stock" className="block text-lg font-semibold text-gray-700">
+              Stock Quantity
+            </label>
+            <input
+              id="stock"
+              name="stock"
+              type="number"
+              value={product.stock}
+              onChange={handleChange}
+              required
+              className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
         </div>
 
         <div>
-          <label className="block text-gray-700">Stock</label>
-          <input
-            type="number"
-            name="stock"
-            value={product.stock}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded-md"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-700">Category</label>
-          <input
-            type="text"
-            name="category"
-            value={product.category}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded-md"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-700">Product Image</label>
+          <label htmlFor="image" className="block text-lg font-semibold text-gray-700">
+            Product Image
+          </label>
           <input
             type="file"
-            onChange={handleFileChange}
-            className="w-full p-3 mt-2 border rounded-md"
+            onChange={handleImageChange}
+            className="mt-2 w-full text-sm text-gray-500 border border-gray-300 rounded-lg file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          {imagePreview && (
-            <div className="mt-4">
-              <img
-                src={imagePreview}
-                alt="Product Preview"
-                className="w-40 h-40 object-cover rounded-lg"
-              />
-            </div>
-          )}
         </div>
 
         <button
           type="submit"
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 mt-6 flex items-center gap-2"
+          disabled={loading}
+          className="w-full py-3 mt-6 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50"
         >
-          <FaSave /> Save Changes
+          {loading ? 'Submitting...' : isEdit ? 'Update Product' : 'Create Product'}
         </button>
       </form>
+
+      {error && <p className="text-red-500 text-center">{error}</p>}
     </div>
   );
 };
 
-export default EditProduct;
+export default ProductForm;

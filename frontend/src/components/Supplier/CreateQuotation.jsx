@@ -1,174 +1,197 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 
 const CreateQuotation = () => {
+  const supplierId = localStorage.getItem("supplierId");  // Retrieve supplierId from localStorage
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-  const [products, setProducts] = useState([{ name: "", price: 0, quantity: 1 }]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [products, setProducts] = useState([{ productId: "", quantity: 1, price: 0 }]);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
-  const handleProductChange = (index, key, value) => {
+  // Handle form changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "customerName") {
+      setCustomerName(value);
+    } else if (name === "customerEmail") {
+      setCustomerEmail(value);
+    } else if (name === "totalPrice") {
+      setTotalPrice(value);
+    }
+  };
+
+  // Handle product input change
+  const handleProductChange = (e, index) => {
+    const { name, value } = e.target;
     const updatedProducts = [...products];
-    updatedProducts[index][key] = value;
+    updatedProducts[index][name] = value;
     setProducts(updatedProducts);
   };
 
-  const addProduct = () => {
-    setProducts([...products, { name: "", price: 0, quantity: 1 }]);
+  // Add new product field
+  const handleAddProduct = () => {
+    setProducts([...products, { productId: "", quantity: 1, price: 0 }]);
   };
 
-  const removeProduct = (index) => {
+  // Remove product field
+  const handleRemoveProduct = (index) => {
     const updatedProducts = products.filter((_, i) => i !== index);
     setProducts(updatedProducts);
   };
 
-  // Function to calculate the total price for each product
-  const calculateTotalPrice = (price, quantity) => {
-    return (price * quantity).toFixed(2);
-  };
-
-  // Function to calculate the total price of all products
-  const calculateTotalQuotationPrice = () => {
-    return products.reduce((acc, product) => acc + product.price * product.quantity, 0).toFixed(2);
-  };
-
+  // Handle form submission to create a new quotation
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if the form is filled correctly
+    if (!customerName || !customerEmail || !totalPrice || products.length === 0) {
+      setError("Please fill in all fields correctly.");
+      return;
+    }
+
+    const newQuotation = {
+      customerName,
+      customerEmail,
+      totalPrice,
+      products,
+      supplierId, // Add supplierId to the quotation data
+    };
+
     try {
-      await axios.post("http://localhost:5000/api/quotations", { customerName, customerEmail, products });
-      navigate("/quotations");
-    } catch (err) {
+      await axios.post("http://localhost:5000/api/quotation/create", newQuotation);
+      setError("");
+      alert("Quotation created successfully!");
+      // Reset the form
+      setCustomerName("");
+      setCustomerEmail("");
+      setTotalPrice(0);
+      setProducts([{ productId: "", quantity: 1, price: 0 }]);
+    } catch (error) {
       setError("Error creating quotation.");
+      console.error("Error creating quotation:", error);
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-2xl p-8 rounded-2xl shadow-2xl space-y-8 flex flex-col"
-      >
-        {/* Form Section */}
-        <div className="space-y-6">
-          <h1 className="text-3xl font-semibold text-center text-gray-800">Create Quotation</h1>
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Create New Quotation</h2>
+      
+      {error && <p className="text-red-500 text-center">{error}</p>}
 
-          {error && <p className="text-red-500 text-center">{error}</p>}
+      <form onSubmit={handleSubmit}>
+        {/* Customer Details */}
+        <div className="mb-4">
+          <label className="block text-lg">Customer Name</label>
+          <input
+            type="text"
+            name="customerName"
+            value={customerName}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded-md mt-2"
+            required
+          />
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-lg text-gray-700 mb-2" htmlFor="customerName">Customer Name</label>
-              <input
-                id="customerName"
-                type="text"
-                placeholder="Enter customer name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full p-4 rounded-lg shadow-md border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all"
-                required
-              />
-            </div>
+        <div className="mb-4">
+          <label className="block text-lg">Customer Email</label>
+          <input
+            type="email"
+            name="customerEmail"
+            value={customerEmail}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded-md mt-2"
+            required
+          />
+        </div>
 
-            <div>
-              <label className="block text-lg text-gray-700 mb-2" htmlFor="customerEmail">Customer Email</label>
-              <input
-                id="customerEmail"
-                type="email"
-                placeholder="Enter customer email"
-                value={customerEmail}
-                onChange={(e) => setCustomerEmail(e.target.value)}
-                className="w-full p-4 rounded-lg shadow-md border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all"
-                required
-              />
-            </div>
+        {/* Total Price */}
+        <div className="mb-4">
+          <label className="block text-lg">Total Price</label>
+          <input
+            type="number"
+            name="totalPrice"
+            value={totalPrice}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded-md mt-2"
+            required
+          />
+        </div>
 
-            <div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-4">Products</h2>
-              {products.map((product, index) => (
-                <div key={index} className="flex space-x-4 items-center mb-4">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      placeholder="Product Name"
-                      value={product.name}
-                      onChange={(e) => handleProductChange(index, "name", e.target.value)}
-                      className="w-full p-4 rounded-lg shadow-md border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all"
-                      required
-                    />
-                  </div>
+        {/* Products */}
+        <div>
+          <h3 className="text-xl font-semibold mt-4">Products</h3>
+          {products.map((product, index) => (
+            <div key={index} className="border p-4 my-4 rounded-md">
+              <div className="mb-2">
+                <label className="block">Product ID</label>
+                <input
+                  type="text"
+                  name="productId"
+                  value={product.productId}
+                  onChange={(e) => handleProductChange(e, index)}
+                  className="w-full p-2 border rounded-md"
+                  required
+                />
+              </div>
 
-                  <div className="w-32">
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      value={product.price}
-                      onChange={(e) => handleProductChange(index, "price", parseFloat(e.target.value))}
-                      className="w-full p-4 rounded-lg shadow-md border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all"
-                      required
-                    />
-                  </div>
-
-                  <div className="w-32">
-                    <input
-                      type="number"
-                      placeholder="Quantity"
-                      value={product.quantity}
-                      onChange={(e) => handleProductChange(index, "quantity", parseInt(e.target.value))}
-                      className="w-full p-4 rounded-lg shadow-md border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all"
-                      required
-                    />
-                  </div>
-
-                  <div className="w-32">
-                    <span className="text-gray-700 font-bold">
-                      Total: ${calculateTotalPrice(product.price, product.quantity)}
-                    </span>
-                  </div>
-
-                  {products.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeProduct(index)}
-                      className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 focus:outline-none"
-                    >
-                      Remove
-                    </button>
-                  )}
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block">Quantity</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={product.quantity}
+                    onChange={(e) => handleProductChange(e, index)}
+                    className="w-full p-2 border rounded-md"
+                    required
+                  />
                 </div>
-              ))}
 
+                <div className="flex-1">
+                  <label className="block">Price</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={product.price}
+                    onChange={(e) => handleProductChange(e, index)}
+                    className="w-full p-2 border rounded-md"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Remove product button */}
               <button
                 type="button"
-                onClick={addProduct}
-                className="bg-[#1c4474] text-white p-4 rounded-lg shadow-md hover:bg-[#1a3a5c] focus:outline-none w-full"
+                onClick={() => handleRemoveProduct(index)}
+                className="mt-4 bg-red-600 text-white py-1 px-4 rounded-md hover:bg-red-700"
               >
-                Add Product
+                Remove Product
               </button>
             </div>
-
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                className="bg-green-500 text-white py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:bg-green-600 focus:outline-none w-full"
-              >
-                Create Quotation
-              </button>
-            </div>
-          </form>
+          ))}
         </div>
-      </motion.div>
 
-      {/* Total Price Box */}
-      <div className="fixed bottom-6 right-6 bg-white p-6 rounded-xl shadow-lg max-w-xs w-full">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">Quotation Total</h3>
-        <p className="text-lg font-bold text-gray-800">
-          Total Price: ${calculateTotalQuotationPrice()}
-        </p>
-      </div>
+        {/* Add Product Button */}
+        <button
+          type="button"
+          onClick={handleAddProduct}
+          className="mt-4 bg-green-600 text-white py-1 px-4 rounded-md hover:bg-green-700"
+        >
+          Add Product
+        </button>
+
+        {/* Submit Button */}
+        <div className="mt-6 flex justify-end">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700"
+          >
+            Create Quotation
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

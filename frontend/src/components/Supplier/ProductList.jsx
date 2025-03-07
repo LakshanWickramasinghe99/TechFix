@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
+import { FaTrash, FaPlus } from "react-icons/fa";
 
-const Products = () => {
+const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
   const supplierId = localStorage.getItem("supplierId");
@@ -19,24 +19,28 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/product/all?supplierId=${supplierId}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/product?supplierId=${supplierId}`
+      );
       if (Array.isArray(response.data)) {
         setProducts(response.data);
       } else {
         setError("Unexpected response format. Expected an array.");
       }
-    } catch {
-      setError("Error fetching products.");
+    } catch (err) {
+      setError("Error fetching products. Please try again later.");
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (productId) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
+
     try {
-      await axios.delete(`http://localhost:5000/api/product/${id}`);
-      setProducts(products.filter((product) => product._id !== id));
-    } catch {
-      setError("Error deleting product.");
+      // Use the productId to send the delete request
+      await axios.delete(`http://localhost:5000/api/product/${productId}`);
+      setProducts(products.filter((product) => product.productId !== productId));
+    } catch (err) {
+      setError("Error deleting product. Please try again.");
     }
   };
 
@@ -62,13 +66,17 @@ const Products = () => {
         {products.length > 0 ? (
           products.map((product) => (
             <motion.div
-              key={product._id}
+              key={product.productId}  // Use productId as the unique key here
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="bg-white/70 backdrop-blur-lg shadow-xl rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 border border-gray-200"
             >
               <img
-                src={product.image ? `http://localhost:5000/uploads/${product.image}` : "/default-image.jpg"}
+                src={
+                  product.image
+                    ? `http://localhost:5000/uploads/${product.image}`
+                    : "/default-image.jpg"
+                }
                 alt={product.name}
                 className="w-full h-40 object-cover rounded-lg mb-3"
                 onError={(e) => (e.target.src = "/default-image.jpg")}
@@ -79,14 +87,8 @@ const Products = () => {
               <p className="text-sm text-gray-500">{product.category}</p>
 
               <div className="flex justify-between mt-4">
-                <Link
-                  to={`/edit-product/${product._id}`}
-                  className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
-                >
-                  <FaEdit /> Edit
-                </Link>
                 <button
-                  onClick={() => handleDelete(product._id)}
+                  onClick={() => handleDelete(product.productId)}  // Use productId for deletion
                   className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300"
                 >
                   <FaTrash /> Delete
@@ -124,4 +126,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default ProductList;

@@ -17,7 +17,7 @@ const upload = multer({ storage: storage });
 const generateProductId = () => {
   const timestamp = Date.now();
   const randomNum = Math.floor(100 + Math.random() * 900); // Generates a 3-digit random number
-  return `PROD-${timestamp}-${randomNum}`;
+  return `PROD-${timestamp}-${randomNum}`; // Correct template literal usage
 };
 
 // Create a product
@@ -59,9 +59,6 @@ const postCreate = (req, res) => {
   });
 };
 
-
-
-
 // Get all products for a supplier
 const getAllProducts = async (req, res) => {
   try {
@@ -78,55 +75,37 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-
 const getProductById = async (req, res) => {
-  console.log(req.body);
-  const { supplierId } = req.body; // Get supplier ID from request body
-
   try {
-    // Validate if supplierId is provided
-    if (!supplierId) {
-      return res.status(400).json({ msg: 'Supplier ID is required' });
-    }
+    const { id } = req.params; // Get the productId from URL parameters
 
-    // Fetch the product based on supplierId
-    const product = await Product.findOne({ supplierId });
+    // Fetch the product based on custom productId (not _id)
+    const product = await Product.findOne({ productId: id });
 
     if (!product) {
-      return res.status(404).json({ msg: 'Product not found for the given Supplier ID' });
+      return res.status(404).json({ msg: 'Product not found for the given Product ID' });
     }
 
     res.json(product);
   } catch (error) {
     console.error('Error fetching product:', error);
-    
-    if (error.name === 'CastError') {
-      return res.status(400).json({ msg: 'Invalid Supplier ID format' });
-    }
-    
     res.status(500).json({ msg: 'Internal Server Error', error: error.message });
   }
 };
 
 
-// Update product by ID
 const updateProductById = async (req, res) => {
-  
-
-  
-
   try {
-    const product = await Product.findOne({ _id: req.params.id });
+    const { id } = req.params; // Get the productId from URL parameters
+
+    // Find the product by custom productId (not _id)
+    const product = await Product.findOne({ productId: id });
 
     if (!product) {
       return res.status(404).json({ msg: 'Product not found' });
     }
 
-    // Check if the logged-in user is the supplier of the product
-    if (product.supplierId !== supplierId) {
-      return res.status(403).json({ msg: 'You are not authorized to update this product' });
-    }
-
+    // Update product fields
     const { name, description, price, stock, category } = req.body;
     product.name = name || product.name;
     product.description = description || product.description;
@@ -145,27 +124,19 @@ const updateProductById = async (req, res) => {
   }
 };
 
-// Delete product by ID
+
 const deleteProductById = async (req, res) => {
-  const supplierId = req.session.supplierId;
-
-  if (!supplierId) {
-    return res.status(401).json({ msg: 'User not authenticated' });
-  }
-
   try {
-    const product = await Product.findOne({ _id: req.params.id });
+    const { id } = req.params; // Get the productId from URL parameters
+
+    // Find and delete the product by custom productId (not _id)
+    const product = await Product.findOne({ productId: id });
 
     if (!product) {
       return res.status(404).json({ msg: 'Product not found' });
     }
 
-    // Check if the logged-in user is the supplier of the product
-    if (product.supplierId !== supplierId) {
-      return res.status(403).json({ msg: 'You are not authorized to delete this product' });
-    }
-
-    await Product.findByIdAndDelete(req.params.id);
+    await Product.findOneAndDelete({ productId: id });
     res.json({ msg: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -177,10 +148,12 @@ const getSupProducts = async (req, res) => {
   try {
     const products = await Product.find();
     res.json(products);
+
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
 };
+
 module.exports = {
   postCreate,
   getAllProducts,
