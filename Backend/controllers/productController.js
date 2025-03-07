@@ -172,10 +172,20 @@ const deleteProductById = async (req, res) => {
   }
 };
 
+//get all products
+const getSupProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
 module.exports = {
   postCreate,
   getAllProducts,
   getProductById,
   updateProductById,
   deleteProductById,
+  getSupProducts
 };
