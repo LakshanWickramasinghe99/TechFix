@@ -23,6 +23,7 @@ import Quotation from "./components/Techfix/RequestQuotation";
 import Product from "./components/Techfix/Products";
 import TechFixProducts from "./components/Techfix/TechFixProducts";
 import CompQuotation from './components/Techfix/CompareQuotations';
+import PastQuotation from "./components/Techfix/PastQuatation";
 
 const App = () => {
   return (
@@ -41,7 +42,8 @@ const AppContent = () => {
     "/product",
     "/techFixProducts",
     "/",
-    "/compareQuotations"
+    "/compareQuotations",
+    "/pastQuotation"
   ];
 
   return (
@@ -69,6 +71,7 @@ const AppContent = () => {
           <Route path="/product" element={<Product />} />
           <Route path="/techFixProducts" element={<TechFixProducts />} />
           <Route path="/compareQuotations" element={<CompQuotation />} />
+          <Route path="/pastQuotation" element={<PastQuotation />} />
         </Routes>
       </main>
       {!noNavbarRoutes.includes(location.pathname) && <Footer />}
