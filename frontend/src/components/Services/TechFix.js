@@ -61,7 +61,7 @@ export const createQuotation = async (quotation) => {
 //get all products
 export const getSupProducts = async () => {
   try {
-    const response = await axios.get(`${base_url}/product/techFix/all`);
+    const response = await axios.get(`${base_url}/product/techFix/search`);
     console.log("Response:", response); // Log the entire response for debugging
     return response.data;
   } catch (error) {

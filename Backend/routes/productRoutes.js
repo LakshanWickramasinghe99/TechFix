@@ -10,7 +10,7 @@ router.get('/all', productController.getAllProducts); // Get all products for th
 router.get('/:id', productController.getProductById); // Get a specific product by ID
 router.put('/:id', productController.updateProductById); // Update product by ID
 router.delete('/:id', productController.deleteProductById); // Delete product by ID
-router.get('/techFix/all', productController.getSupProducts);
+router.get('/techFix/search', productController.getSupProducts);
 
 
 //techFix routes
