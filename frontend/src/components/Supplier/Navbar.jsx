@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, UserCircle, Search } from "lucide-react";
+import { Menu, X, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../../assets/Techfix.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false); // Mobile menu state
   const [profileOpen, setProfileOpen] = useState(false); // Profile dropdown state
-  const [searchQuery, setSearchQuery] = useState(""); // Search input
   const [userName, setUserName] = useState(""); // Store logged-in user's name
   const dropdownRef = useRef(null); // Ref for detecting outside clicks
 
@@ -29,7 +28,7 @@ const Navbar = () => {
     }
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -53,11 +52,6 @@ const Navbar = () => {
     window.location.href = "/login";
   };
 
-  // Handle search input change
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
   return (
     <nav className="bg-[#1c4474] shadow-md">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
@@ -68,18 +62,6 @@ const Navbar = () => {
             TECHFIX
           </span>
         </Link>
-
-        {/* Search Bar (Hidden on mobile, visible on medium+ screens) */}
-        <div className="hidden md:flex items-center bg-white px-4 py-1 rounded-lg shadow-sm w-96">
-          <Search size={20} className="text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="w-full p-2 text-gray-800 focus:outline-none"
-          />
-        </div>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-8 text-white text-lg font-medium">
@@ -114,11 +96,11 @@ const Navbar = () => {
           <AnimatePresence>
             {profileOpen && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2"
+                className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2 origin-top"
               >
                 <p className="px-4 py-2 font-semibold">{userName}</p>
                 <Link
@@ -147,46 +129,34 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu with Animation */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="md:hidden bg-[#1E4876] text-white text-center space-y-3 p-4"
           >
-            {/* Search Bar in Mobile Menu */}
-            <div className="flex items-center bg-white px-4 py-2 rounded-lg shadow-sm">
-              <Search size={20} className="text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="w-full p-2 text-gray-800 focus:outline-none"
-              />
-            </div>
-
             <ul className="space-y-2">
               <li>
-                <Link to="/" onClick={() => setIsOpen(false)}>
+                <Link to="/" onClick={() => setIsOpen(false)} className="block py-2 hover:bg-[#16365A] rounded-lg">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/products" onClick={() => setIsOpen(false)}>
+                <Link to="/products" onClick={() => setIsOpen(false)} className="block py-2 hover:bg-[#16365A] rounded-lg">
                   Products
                 </Link>
               </li>
               <li>
-                <Link to="/quotations" onClick={() => setIsOpen(false)}>
+                <Link to="/quotations" onClick={() => setIsOpen(false)} className="block py-2 hover:bg-[#16365A] rounded-lg">
                   Quotations
                 </Link>
               </li>
               <li>
-                <Link to="/profile" onClick={() => setIsOpen(false)}>
+                <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 hover:bg-[#16365A] rounded-lg">
                   Profile
                 </Link>
               </li>
