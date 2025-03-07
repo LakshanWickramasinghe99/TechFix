@@ -1,151 +1,182 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom"; // Use useNavigate instead of useHistory
+import { FaSave, FaImage } from "react-icons/fa";
 
-const ProductForm = ({ isEdit, productId }) => {
+const EditProduct = () => {
   const [product, setProduct] = useState({
-    name: '',
-    description: '',
-    price: '',
-    stock: '',
-    category: '',
-    image: null,
-    supplierId: localStorage.getItem('supplierId'),
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+    category: "",
+    image: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
+  const { id } = useParams(); // Product ID from URL
+  const navigate = useNavigate(); // useNavigate hook
 
-  // Fetch product data if editing
   useEffect(() => {
-    if (isEdit && productId) {
-      axios
-        .get(`http://localhost:5000/api/products/${productId}`) // Ensure the correct backend URL
-        .then((response) => {
-          setProduct(response.data);
-        })
-        .catch((err) => {
-          setError('Failed to load product data.');
-        });
+    fetchProduct();
+  }, [id]);
+
+  // Fetch product details by ID
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/product/${id}`);
+      setProduct(response.data);
+      setImagePreview(response.data.image ? `http://localhost:5000/uploads/${response.data.image}` : null);
+    } catch (err) {
+      setError("Error fetching product.");
     }
-  }, [isEdit, productId]);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prevState) => ({
-      ...prevState,
+    setProduct((prevProduct) => ({
+      ...prevProduct,
       [name]: value,
     }));
   };
 
-  const handleImageChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setProduct((prevState) => ({
-      ...prevState,
+    setProduct((prevProduct) => ({
+      ...prevProduct,
       image: file,
     }));
+    setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     const formData = new FormData();
-    formData.append('name', product.name);
-    formData.append('description', product.description);
-    formData.append('price', product.price);
-    formData.append('stock', product.stock);
-    formData.append('category', product.category);
-    formData.append('supplierId',product.supplierId); // Replace with actual supplier ID from session or state
-
+    formData.append("name", product.name);
+    formData.append("description", product.description);
+    formData.append("price", product.price);
+    formData.append("stock", product.stock);
+    formData.append("category", product.category);
     if (product.image) {
-      formData.append('image', product.image);
+      formData.append("image", product.image);
     }
 
-    const url = isEdit
-      ? `http://localhost:5000/api/products/${supplierId}` // Correct URL for editing
-      : 'http://localhost:5000/api/product/create'; // Correct URL for creating new product
-    const method = isEdit ? 'put' : 'post';
-
-    axios({
-      method,
-      url,
-      data: formData,
-    })
-      .then((response) => {
-        setLoading(false);
-        navigate('/products');
-      })
-      .catch((err) => {
-        setLoading(false);
-        setError(err.response?.data?.msg || 'Error saving product.');
-      });
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/product/${id}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      setSuccess("Product updated successfully!");
+      setTimeout(() => {
+        navigate("/products"); // Use navigate to redirect after success
+      }, 2000);
+    } catch (err) {
+      setError("Error updating product.");
+    }
   };
 
   return (
-    <div>
-      <h2>{isEdit ? 'Edit Product' : 'Create Product'}</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 p-6 flex flex-col items-center relative">
+      <h1 className="text-4xl font-extrabold text-gray-900 mb-8 tracking-wide">
+        Edit Product
+      </h1>
+
+      {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-green-500">{success}</p>}
+
+      <form
+        className="bg-white shadow-xl rounded-2xl p-6 flex flex-col gap-6 w-full max-w-md"
+        onSubmit={handleSubmit}
+      >
         <div>
-          <label>Name</label>
+          <label className="block text-gray-700">Product Name</label>
           <input
             type="text"
             name="name"
             value={product.name}
             onChange={handleChange}
+            className="w-full p-3 mt-2 border rounded-md"
             required
           />
         </div>
+
         <div>
-          <label>Description</label>
+          <label className="block text-gray-700">Description</label>
           <textarea
             name="description"
             value={product.description}
             onChange={handleChange}
+            className="w-full p-3 mt-2 border rounded-md"
             required
           />
         </div>
+
         <div>
-          <label>Price</label>
+          <label className="block text-gray-700">Price</label>
           <input
             type="number"
             name="price"
             value={product.price}
             onChange={handleChange}
+            className="w-full p-3 mt-2 border rounded-md"
             required
           />
         </div>
+
         <div>
-          <label>Stock</label>
+          <label className="block text-gray-700">Stock</label>
           <input
             type="number"
             name="stock"
             value={product.stock}
             onChange={handleChange}
+            className="w-full p-3 mt-2 border rounded-md"
             required
           />
         </div>
+
         <div>
-          <label>Category</label>
+          <label className="block text-gray-700">Category</label>
           <input
             type="text"
             name="category"
             value={product.category}
             onChange={handleChange}
+            className="w-full p-3 mt-2 border rounded-md"
             required
           />
         </div>
+
         <div>
-          <label>Image</label>
-          <input type="file" onChange={handleImageChange} />
+          <label className="block text-gray-700">Product Image</label>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="w-full p-3 mt-2 border rounded-md"
+          />
+          {imagePreview && (
+            <div className="mt-4">
+              <img
+                src={imagePreview}
+                alt="Product Preview"
+                className="w-40 h-40 object-cover rounded-lg"
+              />
+            </div>
+          )}
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Submitting...' : isEdit ? 'Update Product' : 'Create Product'}
+
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 mt-6 flex items-center gap-2"
+        >
+          <FaSave /> Save Changes
         </button>
       </form>
-      {error && <p>{error}</p>}
     </div>
   );
 };
 
-export default ProductForm;
+export default EditProduct;
