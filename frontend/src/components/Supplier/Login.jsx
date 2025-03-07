@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -74,7 +73,7 @@ const Login = () => {
       >
         <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
           
-          Supplier Login
+          Login
         
         </h2>
         <form onSubmit={handleLogin} className="space-y-6">

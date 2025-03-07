@@ -1,5 +1,5 @@
 const express = require('express');
-const { addTechFixProduct, getTechFixProducts } = require('../controllers/TechFixProductController');
+const { addTechFixProduct, getTechFixProducts,getSupProducts } = require('../controllers/TechFixProductController');
 const techUpload = require('../middleware/techFixUpload');
 const productController = require('../controllers/productController'); // Import the controller
 const router = express.Router();
@@ -10,6 +10,8 @@ router.get('/all', productController.getAllProducts); // Get all products for th
 router.get('/:id', productController.getProductById); // Get a specific product by ID
 router.put('/:id', productController.updateProductById); // Update product by ID
 router.delete('/:id', productController.deleteProductById); // Delete product by ID
+router.get('/techFix/all', productController.getSupProducts);
+
 
 //techFix routes
 router.post('/techfix/add', techUpload.single('image'), addTechFixProduct);
