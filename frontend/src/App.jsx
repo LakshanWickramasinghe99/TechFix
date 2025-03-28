@@ -1,19 +1,27 @@
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import sHome from './pages/Home';
+import Login from './pages/Login';
+import EmailVerify from './pages/EmailVerify';
+import ResetPassword from './pages/ResetPassword';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ErrorBoundary from './components/ErrorBoundary';  
 
-import './App.css'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Home from './Components/User/Home'
-
-function App() {
-
-
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Router>
-   
-  )
+    <ErrorBoundary>  {/* Wrapping the app with an Error Boundary */}
+      <div>
+        <ToastContainer />
+        <Routes>
+          <Route path='/shome' element={<sHome />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/email-verify' element={<EmailVerify />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+        </Routes>
+      </div>
+    </ErrorBoundary>
+  );
 }
 
-export default App
+export default App;

@@ -1,29 +1,54 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+import { authRouter } from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js';
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 const DB = process.env.MONGODB_URI;
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
+const allowedOrigins = [
+  'http://localhost:5173'
+];
 
-// MongoDB connection
-mongoose
-  .connect(DB)
-  .then(() => console.log("MongoDB connected successfully"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// Middleware
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
+
+// Database Connection (simplified)
+mongoose.connect(DB)
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Routes
-app.get("/", (req, res) => {
-  res.send("Hello, TechFix!");
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
 });
 
-// Start server
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
+
+// Error Handling
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+// Start Server
 app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
+  console.log(`Server running on port ${port}`);
 });
