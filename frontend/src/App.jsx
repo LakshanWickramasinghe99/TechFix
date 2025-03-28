@@ -28,7 +28,7 @@ const App = () => {
   const location = useLocation();
 
   // Define routes where Navbar should not be displayed
-  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password"];
+  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password", "/admin","/products","/dashboard","/analytics","/addproduct" ,"/admin/editproduct/:id"]; ;
 
   return (
 
@@ -60,12 +60,12 @@ const App = () => {
           <Route path="/order-details" element={<OrderDetails />} />
           <Route path="/cart" element={<Cart />} />
             
-           <Route path="/admin" element={<AdminLayout />}>
-          <Route path="products" element={<ProductList />} />
+        <Route path="/admin" element={<AdminLayout />}/>
+          <Route path="/products" element={<ProductList />} />
          <Route path="/admin/editproduct/:id" element={<EditProduct />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="addproduct" element={<AddProductPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/addproduct" element={<AddProductPage />} />
         </Routes>
       </div>
     </ErrorBoundary>

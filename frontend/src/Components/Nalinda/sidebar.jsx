@@ -15,11 +15,11 @@ const Sidebar = () => {
         <div className="mb-6">
           <p className="text-gray-400 text-xs uppercase tracking-wider mb-2 pl-2">Main</p>
           <div className="space-y-1">
-            <Link to="/admin/dashboard" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
+            <Link to="/dashboard" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
               <LayoutDashboard className="w-5 h-5 mr-3 text-blue-400 group-hover:text-blue-300" /> 
               <span className="font-medium">Dashboard</span>
             </Link>
-            <Link to="/admin/analytics" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
+            <Link to="/analytics" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
               <BarChart className="w-5 h-5 mr-3 text-green-400 group-hover:text-green-300" /> 
               <span className="font-medium">Analytics</span>
             </Link>
@@ -33,7 +33,7 @@ const Sidebar = () => {
         <div className="mb-6">
           <p className="text-gray-400 text-xs uppercase tracking-wider mb-2 pl-2">Content</p>
           <div className="space-y-1">
-            <Link to="/admin/products" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
+            <Link to="/products" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
               <Package className="w-5 h-5 mr-3 text-yellow-400 group-hover:text-yellow-300" /> 
               <span className="font-medium">Products</span>
             </Link>
