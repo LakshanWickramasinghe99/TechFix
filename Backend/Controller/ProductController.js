@@ -1,4 +1,4 @@
-const Products = require('../Model/Product'); // Import the default product data
+import Products from '../Model/Product.js'; // Import the default product data
 
 const getAllProducts = async (req, res) => {
   try {
@@ -8,6 +8,4 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllProducts,
-};
+export { getAllProducts };

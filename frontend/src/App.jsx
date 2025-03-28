@@ -1,5 +1,12 @@
-import "./App.css";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
+import SHome from "./pages/Home";
+import Login from "./pages/Login";
+import EmailVerify from "./pages/EmailVerify";
+import ResetPassword from "./pages/ResetPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./Components/User/Home";
 import Navbar from "./Components/Tharaka/Navbar";
 import Hero from "./Components/Tharaka/Hero";
@@ -17,32 +24,52 @@ import AdminLayout  from "./Components/Nalinda/adminlayout";
 import EditProduct from "./Components/Nalinda/editproduct";
 
 
-function App() {
-  return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<><Hero /><Home /><><Banner /><HomePageDown/></></>} />
-        
-        <Route path="/product/:id" element={<Product />} />
-        <Route path="/order" element={<Order />} />
-        <Route path="/order-details" element={<OrderDetails />} />
-        <Route path="/cart" element={<Cart />} />
-     
+const App = () => {
+  const location = useLocation();
 
-      
-        <Route path="/admin" element={<AdminLayout />}>
-        <Route path="products" element={<ProductList />} />
-        <Route path="/admin/editproduct/:id" element={<EditProduct />} />
+  // Define routes where Navbar should not be displayed
+  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password"];
+
+  return (
+
+    <ErrorBoundary>
+      <div>
+        <ToastContainer />
+        {/* Conditionally render Navbar */}
+        {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
+        <Routes>
+          <Route path="/shome" element={<SHome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/email-verify" element={<EmailVerify />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <Home />
+                <>
+                  <Banner />
+                  <HomePageDown />
+                </>
+              </>
+            }
+          />
+          <Route path="/product/:id" element={<Product />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/order-details" element={<OrderDetails />} />
+          <Route path="/cart" element={<Cart />} />
+            
+           <Route path="/admin" element={<AdminLayout />}>
+          <Route path="products" element={<ProductList />} />
+         <Route path="/admin/editproduct/:id" element={<EditProduct />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="analytics" element={<Analytics />} />
-        <Route path="addproduct" element={<AddProductPage />} /> 
-        </Route>
+        <Route path="addproduct" element={<AddProductPage />} />
         </Routes>
-    </Router>
-
-    
+      </div>
+    </ErrorBoundary>
   );
-}
+};
 
 export default App;

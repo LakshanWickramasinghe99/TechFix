@@ -1,4 +1,5 @@
-module.exports = [
+const products = [
+
   {
     id: 1,
     title: "Apple MacBook Air Laptop",
@@ -16,3 +17,5 @@ module.exports = [
     trendImage: "../uploads/macbook1.jpg", // Path to the trend image
   },
 ];
+
+export default products;
