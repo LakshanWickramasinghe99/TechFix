@@ -16,6 +16,13 @@ import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
 import OrderDetails from "./Components/Tharaka/OrderDetails";
 import Cart from "./Components/Tharaka/Cart";
+import AddProductPage from "./Components/Nalinda/pages/addproductpage";
+import ProductList from "./Components/Nalinda/pages/productlist";
+import Dashboard from "./Components/Nalinda/pages/dashboard";
+import Analytics from "./Components/Nalinda/pages/analytics";
+import AdminLayout  from "./Components/Nalinda/adminlayout";
+import EditProduct from "./Components/Nalinda/editproduct";
+
 
 const App = () => {
   const location = useLocation();
@@ -24,6 +31,7 @@ const App = () => {
   const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password"];
 
   return (
+
     <ErrorBoundary>
       <div>
         <ToastContainer />
@@ -51,6 +59,13 @@ const App = () => {
           <Route path="/order" element={<Order />} />
           <Route path="/order-details" element={<OrderDetails />} />
           <Route path="/cart" element={<Cart />} />
+            
+           <Route path="/admin" element={<AdminLayout />}>
+          <Route path="products" element={<ProductList />} />
+         <Route path="/admin/editproduct/:id" element={<EditProduct />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="addproduct" element={<AddProductPage />} />
         </Routes>
       </div>
     </ErrorBoundary>
