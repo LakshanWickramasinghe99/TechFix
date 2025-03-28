@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import mac1 from "../../assets/mac.jpg";
 import mac2 from "../../assets/mac2.jpg";
@@ -6,25 +6,6 @@ import mac3 from "../../assets/mac3.jpg";
 
 const TodaysDeal = () => {
   const navigate = useNavigate();
-
-  // Countdown Timer State
-  const [timeLeft, setTimeLeft] = useState(3 * 60 * 60); // 3 hours in seconds
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  // Convert seconds to HH:MM:SS format
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   const laptops = [
     {
@@ -57,15 +38,8 @@ const TodaysDeal = () => {
     <div className="container mx-auto px-4 py-12">
       {/* Title */}
       <h1 className="text-4xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-[#3674B5]">
-        ⚡ TODAY'S HOT DEALS
+        WELCOME DEALS
       </h1>
-
-      {/* Countdown Timer */}
-      <div className="flex justify-center items-center mb-8">
-        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-lg font-bold px-6 py-2 rounded-full shadow-lg animate-pulse">
-          ⏳ Offer Ends in: {formatTime(timeLeft)}
-        </div>
-      </div>
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
@@ -76,7 +50,7 @@ const TodaysDeal = () => {
           >
             {/* Floating Sale Tag */}
             <div className="absolute top-4 left-4 bg-red-500 text-white text-sm px-3 py-1 rounded-full font-semibold shadow-md">
-              🔥 Hot Deal
+              🔥 welcome deal
             </div>
 
             {/* Laptop Image */}
