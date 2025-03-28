@@ -24,6 +24,7 @@ import AdminLayout  from "./Components/Nalinda/adminlayout";
 import EditProduct from "./Components/Nalinda/editproduct";
 
 
+
 const App = () => {
   const location = useLocation();
 

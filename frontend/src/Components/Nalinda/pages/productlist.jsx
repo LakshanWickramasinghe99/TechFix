@@ -49,7 +49,7 @@ const ProductList = () => {
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Products</h2>
-        <Link to="/admin/addproduct" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <Link to="/addproduct" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           Add New Product
         </Link>
       </div>
