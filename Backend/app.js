@@ -16,6 +16,8 @@ const allowedOrigins = [
   'http://localhost:5173'
 ];
 
+const ProductRoutes = require("./Routes/ProductRoutes");
+
 // Middleware
 app.use(cors({
   origin: allowedOrigins,
@@ -25,6 +27,12 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
+
+// Serve static files (Images in "Uploads" folder)
+app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
+
+// API Routes
+app.use("/api/products", ProductRoutes);
 
 // Database Connection (simplified)
 mongoose.connect(DB)
@@ -48,6 +56,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+// Start Server
 // Start Server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
