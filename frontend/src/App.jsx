@@ -16,13 +16,13 @@ import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
 import OrderDetails from "./Components/Tharaka/OrderDetails";
 import Cart from "./Components/Tharaka/Cart";
+import Profile from './pages/Profile';
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
 import Dashboard from "./Components/Nalinda/pages/dashboard";
 import Analytics from "./Components/Nalinda/pages/analytics";
 import AdminLayout  from "./Components/Nalinda/adminlayout";
 import EditProduct from "./Components/Nalinda/editproduct";
-
 
 const App = () => {
   const location = useLocation();
@@ -38,6 +38,12 @@ const App = () => {
         {/* Conditionally render Navbar */}
         {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
         <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/email-verify' element={<EmailVerify />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/profile' element={<Profile />} />
+
           <Route path="/shome" element={<SHome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/email-verify" element={<EmailVerify />} />
@@ -66,6 +72,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/addproduct" element={<AddProductPage />} />
+
         </Routes>
       </div>
     </ErrorBoundary>
