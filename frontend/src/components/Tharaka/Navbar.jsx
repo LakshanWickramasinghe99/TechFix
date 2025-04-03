@@ -71,7 +71,14 @@ const Navbar = () => {
       <nav className="flex items-center justify-between p-4 border-0 border-[#3674B5] shadow-md bg-white relative">
         {/* Logo */}
         <div className="flex items-center">
-          <img src={logo} alt="TechFix" className="w-40 h-auto" />
+    
+          <img
+            src={logo}
+            alt="TechFix"
+            className="w-40 h-auto cursor-pointer"
+            onClick={() => navigate('/')}
+          />
+        
         </div>
 
         {/* Search Bar */}

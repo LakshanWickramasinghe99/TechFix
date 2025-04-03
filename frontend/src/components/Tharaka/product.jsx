@@ -33,14 +33,7 @@ const Product = () => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      {/* Back Button */}
-      <button
-        className="mb-6 px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition duration-300"
-        onClick={() => navigate(-1)}
-      >
-        ⬅ Back
-      </button>
-
+      
       {/* Product Details Container */}
       <div className="bg-white border rounded-lg shadow-xl p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
         {/* Product Image */}

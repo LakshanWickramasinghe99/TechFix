@@ -529,7 +529,7 @@ const Login = () => {
             setIsLoggedin(true);
             getUserData();
             setUserData(response.data.user);
-            navigate('/');
+            navigate('/shome');
         } catch (error) {
             console.error("Login Error:", error);
             toast.dismiss();
