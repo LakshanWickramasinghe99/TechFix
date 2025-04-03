@@ -3,15 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const categories = [
-    "Mobiles", "Laptops", "Watches", "Earphones", "Monitors",
-    "PowerBanks", "Gaming", "Storages"
-  ];
+  "Mobiles", "Laptops", "Watches", "Earphones", "Monitors",
+  "PowerBanks", "Gaming", "Storages"
+];
 
-const EditProduct = () => {
+const EditItem = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [product, setProduct] = useState({
+  const [item, setItem] = useState({
     title: "",
     price: "",
     category: "",
@@ -22,12 +22,11 @@ const EditProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch product details
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchItem = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/products/${id}`);
-        setProduct(response.data);
+        const response = await axios.get(`http://localhost:5000/api/items/${id}`);
+        setItem(response.data);
       } catch (err) {
         setError("Error fetching product details");
       } finally {
@@ -35,66 +34,65 @@ const EditProduct = () => {
       }
     };
 
-    fetchProduct();
+    fetchItem();
   }, [id]);
 
-  // Handle input changes
   const handleChange = (e) => {
-    setProduct({ ...product, [e.target.name]: e.target.value });
+    setItem({ ...item, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission (Update product)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, product);
+      await axios.put(`http://localhost:5000/api/items/${id}`, item);
       alert("Product updated successfully!");
-      navigate("/admin/products"); // Redirect to product list
+      navigate("/admin/products");
     } catch (error) {
       alert("Error updating product!");
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-6">Edit Product</h2>
+    <div className="max-w-2xl mx-auto mt-10 p-8 bg-white shadow-xl rounded-2xl border border-gray-200">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Edit Product</h2>
+      
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center text-gray-500">Loading...</p>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500 text-center">{error}</p>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Title</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Title</label>
             <input
               type="text"
               name="title"
-              value={product.title}
+              value={item.title}
               onChange={handleChange}
-              className="w-full border p-2 rounded"
+              className="w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-3 rounded-lg shadow-sm"
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">Price ($)</label>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Price ($)</label>
             <input
               type="number"
               name="price"
-              value={product.price}
+              value={item.price}
               onChange={handleChange}
-              className="w-full border p-2 rounded"
+              className="w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-3 rounded-lg shadow-sm"
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">Category</label>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Category</label>
             <select
               name="category"
-              value={product.category}
+              value={item.category}
               onChange={handleChange}
-              className="w-full border p-2 rounded"
+              className="w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-3 rounded-lg shadow-sm"
               required
             >
               <option value="">Select a category</option>
@@ -106,35 +104,42 @@ const EditProduct = () => {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">Description</label>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Description</label>
             <textarea
               name="description"
-              value={product.description}
+              value={item.description}
               onChange={handleChange}
-              className="w-full border p-2 rounded"
-              rows="3"
+              className="w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-3 rounded-lg shadow-sm"
+              rows="4"
               required
             ></textarea>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">Image URL</label>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Image URL</label>
             <input
               type="text"
               name="image"
-              value={product.image}
+              value={item.image}
               onChange={handleChange}
-              className="w-full border p-2 rounded"
+              className="w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-3 rounded-lg shadow-sm"
               required
             />
           </div>
 
-          <div className="flex gap-4">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 transition-all"
+            >
               Update Product
             </button>
-            <button onClick={() => navigate("/admin/products")} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+            <button
+              type="button"
+              onClick={() => navigate("/admin/products")}
+              className="bg-gray-600 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:bg-gray-700 transition-all"
+            >
               Cancel
             </button>
           </div>
@@ -144,4 +149,4 @@ const EditProduct = () => {
   );
 };
 
-export default EditProduct;
+export default EditItem;

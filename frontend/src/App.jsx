@@ -21,8 +21,10 @@ import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
 import Dashboard from "./Components/Nalinda/pages/dashboard";
 import Analytics from "./Components/Nalinda/pages/analytics";
-import AdminLayout  from "./Components/Nalinda/adminlayout";
 import EditProduct from "./Components/Nalinda/editproduct";
+import AdminLayout from "./Components/Nalinda/adminlayout";
+import ItemDetails from "./Components/Nalinda/pages/productview";
+
 
 
 
@@ -30,7 +32,10 @@ const App = () => {
   const location = useLocation();
 
   // Define routes where Navbar should not be displayed
-  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password", "/admin","/products","/dashboard","/analytics","/addproduct" ,"/admin/editproduct/:id"]; ;
+
+  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password","/admin","/admin/products","/admin/productview/:id","/admin/editproduct/:id",
+    "/admin/dashboard", "/admin/analytics" , "/admin/addproduct"
+  ];
 
   return (
 
@@ -68,14 +73,18 @@ const App = () => {
           <Route path="/order-details" element={<OrderDetails />} />
           <Route path="/cart" element={<Cart />} />
             
-        <Route path="/admin" element={<AdminLayout />}/>
-          <Route path="/products" element={<ProductList />} />
-         <Route path="/admin/editproduct/:id" element={<EditProduct />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/addproduct" element={<AddProductPage />} />
+
+          <Route path="/admin" element={<AdminLayout />}>
+        <Route path="products" element={<ProductList />} />
+        <Route path="/admin/productview/:id" element={<ItemDetails/>} />
+        <Route path="/admin/editproduct/:id" element={<EditProduct />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="addproduct" element={<AddProductPage />} /> 
+        </Route>
 
         </Routes>
+
       </div>
     </ErrorBoundary>
   );
