@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import img from '../../../assets/mac.jpg'; // Placeholder image
 
 const categories = [
     "Mobiles", "Laptops", "Watches", "Earphones", "Monitors",
@@ -88,7 +89,9 @@ const ProductList = () => {
                     {product.category}
                   </span>
                   <img 
-                    src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/200'} 
+                    // src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/200'} 
+                    src={img} 
+
                     alt={product.title} 
                     className="w-full h-48 object-cover rounded-lg mb-4"
                   />
