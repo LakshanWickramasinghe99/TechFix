@@ -16,6 +16,7 @@ import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
 import OrderDetails from "./Components/Tharaka/OrderDetails";
 import Cart from "./Components/Tharaka/Cart";
+import Profile from './pages/Profile';
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
 import Dashboard from "./Components/Nalinda/pages/dashboard";
@@ -26,10 +27,12 @@ import ItemDetails from "./Components/Nalinda/pages/productview";
 
 
 
+
 const App = () => {
   const location = useLocation();
 
   // Define routes where Navbar should not be displayed
+
   const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password","/admin","/admin/products","/admin/productview/:id","/admin/editproduct/:id",
     "/admin/dashboard", "/admin/analytics" , "/admin/addproduct"
   ];
@@ -42,6 +45,12 @@ const App = () => {
         {/* Conditionally render Navbar */}
         {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
         <Routes>
+          {/* <Route path='/' element={<Home />} /> */}
+          <Route path='/login' element={<Login />} />
+          <Route path='/email-verify' element={<EmailVerify />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/profile' element={<Profile />} />
+
           <Route path="/shome" element={<SHome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/email-verify" element={<EmailVerify />} />
@@ -64,6 +73,7 @@ const App = () => {
           <Route path="/order-details" element={<OrderDetails />} />
           <Route path="/cart" element={<Cart />} />
             
+
           <Route path="/admin" element={<AdminLayout />}>
         <Route path="products" element={<ProductList />} />
         <Route path="/admin/productview/:id" element={<ItemDetails/>} />
@@ -72,6 +82,7 @@ const App = () => {
         <Route path="analytics" element={<Analytics />} />
         <Route path="addproduct" element={<AddProductPage />} /> 
         </Route>
+
         </Routes>
 
       </div>

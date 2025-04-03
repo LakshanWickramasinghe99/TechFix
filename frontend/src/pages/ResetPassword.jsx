@@ -8,46 +8,44 @@ import mail_icon from '../assets/mail_icon.svg';
 import lock_icon from '../assets/lock_icon.svg';
 
 const PasswordStrength = ({ password }) => {
-  if (!password) return null;
-
-  const strength = {
-    0: 'Very Weak',
-    1: 'Weak',
-    2: 'Medium',
-    3: 'Strong',
-    4: 'Very Strong'
-  };
-
-  const calculateStrength = () => {
-    let score = 0;
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
-    return Math.min(score, 4);
-  };
-
-  const strengthLevel = calculateStrength();
-  const width = `${(strengthLevel / 4) * 100}%`;
-  const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
-
-  return (
-    <div className="mt-1">
-      <div className="h-1 w-full bg-gray-700 rounded-full overflow-hidden">
-        <div 
-          className={`h-full ${colors[strengthLevel]}`} 
-          style={{ width }} 
-          aria-valuenow={strengthLevel} 
-          aria-valuemin="0" 
-          aria-valuemax="4"
-        />
+    if (!password) return null;
+  
+    const strength = {
+      0: 'Very Weak',
+      1: 'Weak',
+      2: 'Medium',
+      3: 'Strong'
+    };
+  
+    const calculateStrength = () => {
+      let score = 0;
+      if (password.length >= 6) score++;
+      if (/[a-zA-Z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      return Math.min(score, 3);
+    };
+  
+    const strengthLevel = calculateStrength();
+    const width = `${(strengthLevel / 3) * 100}%`;
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
+  
+    return (
+      <div className="mt-1">
+        <div className="h-1 w-full bg-gray-700 rounded-full overflow-hidden">
+          <div 
+            className={`h-full ${colors[strengthLevel]}`} 
+            style={{ width }} 
+            aria-valuenow={strengthLevel} 
+            aria-valuemin="0" 
+            aria-valuemax="3"
+          />
+        </div>
+        <p className="text-xs text-gray-400 mt-1">
+          Password strength: <span className="text-white">{strength[strengthLevel]}</span>
+        </p>
       </div>
-      <p className="text-xs text-gray-400 mt-1">
-        Password strength: <span className="text-white">{strength[strengthLevel]}</span>
-      </p>
-    </div>
-  );
-};
+    );
+  };
 
 const ResetPassword = () => {
     const { backendUrl } = useContext(AppContext);
@@ -110,27 +108,23 @@ const ResetPassword = () => {
     // Validate password fields
     const validatePassword = () => {
         const newErrors = {};
-
+    
         if (!newPassword) {
             newErrors.newPassword = 'Password is required';
         } else {
-            if (newPassword.length < 8) {
-                newErrors.newPassword = 'Password must be at least 8 characters';
-            } else if (!/[A-Z]/.test(newPassword)) {
-                newErrors.newPassword = 'Include at least one uppercase letter';
-            } else if (!/[a-z]/.test(newPassword)) {
-                newErrors.newPassword = 'Include at least one lowercase letter';
+            if (newPassword.length < 6) {
+                newErrors.newPassword = 'Password must be at least 6 characters';
+            } else if (!/[a-zA-Z]/.test(newPassword)) {
+                newErrors.newPassword = 'Password must contain at least one letter';
             } else if (!/[0-9]/.test(newPassword)) {
-                newErrors.newPassword = 'Include at least one number';
-            } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
-                newErrors.newPassword = 'Include at least one special character';
+                newErrors.newPassword = 'Password must contain at least one number';
             }
         }
-
+    
         if (newPassword !== confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
-
+    
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -346,7 +340,7 @@ const ResetPassword = () => {
                             <img src={lock_icon} alt="Lock Icon" className="w-3 h-3" />
                             <input
                                 type="password"
-                                placeholder="New Password (min 8 characters)"
+                                placeholder="New Password (min 6 characters with letters & numbers)"
                                 className="bg-transparent outline-none text-white w-full"
                                 value={newPassword}
                                 onChange={(e) => {
@@ -354,7 +348,7 @@ const ResetPassword = () => {
                                     if (errors.newPassword) setErrors({...errors, newPassword: ''});
                                 }}
                                 required
-                                minLength="8"
+                                minLength="6"
                                 autoFocus
                             />
                         </div>
@@ -377,7 +371,7 @@ const ResetPassword = () => {
                                     if (errors.confirmPassword) setErrors({...errors, confirmPassword: ''});
                                 }}
                                 required
-                                minLength="8"
+                                minLength="6"
                             />
                         </div>
                         {errors.confirmPassword && (

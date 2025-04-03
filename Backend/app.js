@@ -21,7 +21,6 @@ const allowedOrigins = [
   'http://localhost:5173'
 ];
 
-import ProductRoutes from './routes/ProductRoutes.js';
 
 
 // Middleware
@@ -46,9 +45,11 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 
 
+
 // API Routes
 app.use("/api/products", ProductRoutes);
 app.use('/api', itemRoutes);
+
 
 // Database Connection (simplified)
 mongoose.connect(DB)

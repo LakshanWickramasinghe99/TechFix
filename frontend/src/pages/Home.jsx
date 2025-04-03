@@ -92,16 +92,35 @@ const Home = () => {
                         </button>
 
                         {dropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg text-sm z-10">
-                                <button
-                                    onClick={handleLogout}
-                                    className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                                    disabled={loading} // Disable logout button while loading
-                                >
-                                    {loading ? 'Logging out...' : 'Logout'}
-                                </button>
-                            </div>
-                        )}
+    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg text-sm z-10 overflow-hidden">
+        <button
+            onClick={() => {
+                setDropdownOpen(false);
+                navigate('/profile');
+            }}
+            className="block w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+            <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                My Profile
+            </div>
+        </button>
+        <button
+            onClick={handleLogout}
+            className="block w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+            disabled={loading}
+        >
+            <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                {loading ? 'Logging out...' : 'Logout'}
+            </div>
+        </button>
+    </div>
+)}
                     </div>
 
                     {/* Logged-in Home Content */}
@@ -139,3 +158,4 @@ const Home = () => {
 };
 
 export default Home;
+

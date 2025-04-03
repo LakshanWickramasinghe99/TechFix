@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import img from '../../../assets/mac.jpg'; // Placeholder image
 
 const categories = [
   "Mobiles", "Laptops", "Watches", "Earphones", "Monitors",
@@ -102,6 +103,7 @@ const ItemList = () => {
     : items;
 
   return (
+
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-7xl mx-auto p-8">
         {/* Delete Notification */}
@@ -125,6 +127,7 @@ const ItemList = () => {
             </button>
           </div>
         )}
+
 
         {/* Header Section with Gradient */}
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl p-6 mb-8 shadow-lg">
@@ -178,6 +181,7 @@ const ItemList = () => {
           </div>
         </div>
 
+
         {/* Loading and Error States */}
         {loading && (
           <div className="flex justify-center items-center h-64">
@@ -210,6 +214,7 @@ const ItemList = () => {
                     className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition duration-300"
                     onMouseEnter={() => setIsHovering(item._id)}
                     onMouseLeave={() => setIsHovering(null)}
+
                   >
                     <div className="relative">
                       {/* Category Badge */}
