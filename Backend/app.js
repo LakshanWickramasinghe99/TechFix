@@ -47,7 +47,7 @@ app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 
 
 // API Routes
-app.use("/api/products", ProductRoutes);
+// app.use("/api/products", ProductRoutes);
 app.use('/api', itemRoutes);
 
 
