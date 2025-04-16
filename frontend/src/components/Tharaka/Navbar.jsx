@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -10,6 +10,10 @@ import {
   Package, // Order Icon
 } from "lucide-react";
 import logo from "../../assets/logo.png";
+import { AppContext } from "../../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 // Category Images
 import mobilesImg from "../../assets/cell-phone.png";
@@ -31,12 +35,23 @@ import lenovoImg from "../../assets/lenovo.png";
 import oppoImg from "../../assets/oppo.png";
 import oneplus from "../../assets/one-plus.png";
 import xiomi from "../../assets/xiaomi.png";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userInitial, setUserInitial] = useState('');
+  const navigate = useNavigate();
+  
+  const { 
+    userData, 
+    backendUrl, 
+    setIsLoggedin, 
+    setUserData, 
+    isLoggedin, 
+    token 
+  } = useContext(AppContext);
 
   const categories = [
     { name: "Mobiles", image: mobilesImg },
@@ -61,8 +76,33 @@ const Navbar = () => {
     { name: "Xiaomi", image: xiomi },
   ];
 
+  // Set user initial when userData changes
+  useEffect(() => {
+    if (userData?.name) {
+      setUserInitial(userData.name.charAt(0).toUpperCase());
+    }
+  }, [userData]);
+
   const handleToggleSection = (section) => {
     setActiveSection(activeSection === section ? null : section);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${backendUrl}/api/auth/logout`, {}, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      toast.success("You have successfully logged out!");
+      setIsLoggedin(false);
+      setUserData(null);
+      navigate('/');
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Error logging out.");
+    }
   };
 
   return (
@@ -101,29 +141,70 @@ const Navbar = () => {
           {/* Wishlist Icon */}
           <Heart size={24} className="text-gray-700 cursor-pointer mr-8" />
 
-          {/* Order Icon - NEW */}
+          {/* Order Icon */}
           <Package
             size={24}
             className="text-gray-700 cursor-pointer mr-8"
-            onClick={() => navigate('/order-details')} // Navigate to Orders Page
+            onClick={() => navigate('/order-details')}
           />
 
           {/* Shopping Cart Icon */}
-          <ShoppingBag size={24} className="text-gray-700 cursor-pointer mr-64"
-          onClick={() => navigate('/cart')} />
+          <ShoppingBag 
+            size={24} 
+            className="text-gray-700 cursor-pointer mr-64"
+            onClick={() => navigate('/cart')} 
+          />
         </div>
 
-        {/* Login/Register */}
-        <div className="absolute top-7 right-4 flex items-center space-x-2">
-          <User size={24} className="text-gray-600" />
-          <span className="text-sm text-gray-500">Welcome</span>
-          <a
-            href="#"
-            className="text-sm font-semibold text-blue-600 hover:underline"
-          >
-            Sign In / Register
-          </a>
-        </div>
+        {/* Login/User Section */}
+        {isLoggedin ? (
+          <div className="absolute top-5 right-5">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="w-10 h-10 flex items-center justify-center bg-black text-white text-lg font-bold rounded-full hover:opacity-80 transition-all"
+            >
+              {userInitial}
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg text-sm z-50 overflow-hidden">
+                <button
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    navigate('/profile');
+                  }}
+                  className="block w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <User className="w-5 h-5 mr-2 text-gray-500" />
+                    My Profile
+                  </div>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Logout
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="absolute top-7 right-4 flex items-center space-x-2">
+            <button
+              onClick={() => navigate('/login')}
+              className="px-4 py-1 bg-gray-500 text-white border-2 border-gray-700 rounded-full flex items-center justify-center space-x-1 hover:bg-gray-400 hover:border-gray-600 transition-all"
+            >
+              <span>Login</span>
+              <span className="text-sm">&rarr;</span>
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* Browse Categories / Brands Buttons */}
@@ -136,7 +217,7 @@ const Navbar = () => {
               activeSection === "categories"
                 ? "bg-[#3674B5] text-white"
                 : activeSection === "brands"
-                ? "bg-gray-700 text-white" // Dark background for inactive section when "brands" is active
+                ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-black hover:bg-gray-500"
             }`}
           >
@@ -180,7 +261,7 @@ const Navbar = () => {
               activeSection === "brands"
                 ? "bg-[#3674B5] text-white"
                 : activeSection === "categories"
-                ? "bg-gray-700 text-white" // Dark background for inactive section when "categories" is active
+                ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-black hover:bg-gray-500"
             }`}
           >
@@ -194,7 +275,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="z-50 border-2 border-[#3674B5] rounded-lg bg-white shadow-md p-1 absolute left-0 mt-2 w-64"
-              style={{ left: "initial", right: 0 }} // Align with the button on the right
+              style={{ left: "initial", right: 0 }}
             >
               <div className="max-h-72 overflow-y-auto">
                 {brands.map((brand, index) => (

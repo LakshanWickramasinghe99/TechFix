@@ -518,18 +518,37 @@ const Login = () => {
                 email, 
                 password 
             });
-
+    
             if (!response.data.success) {
                 throw new Error(response.data.message || 'Login failed');
             }
-
+    
             toast.dismiss();
             toast.success('Login Successful!');
             
+            // Update user state and context
+            const { token, user } = response.data;
+            
+            // Set authentication state
             setIsLoggedin(true);
-            getUserData();
-            setUserData(response.data.user);
-            navigate('/');
+            
+            // Store user data in context
+            setUserData({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                // Add any other user data you want to store globally
+            });
+    
+            // Store token in cookie (handled by backend)
+            
+            // Fetch complete user profile data
+            await getUserData();
+            
+            // Redirect to home or intended page
+            const redirectTo = location.state?.from?.pathname || '/';
+            navigate(redirectTo);
+            
         } catch (error) {
             console.error("Login Error:", error);
             toast.dismiss();
@@ -537,6 +556,10 @@ const Login = () => {
                                error.message || 
                                'Login failed. Please check your credentials';
             toast.error(errorMessage);
+            
+            // Clear any partial state on error
+            setIsLoggedin(false);
+            setUserData(null);
         } finally {
             setLoading(false);
         }
