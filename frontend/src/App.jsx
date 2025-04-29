@@ -51,7 +51,7 @@ const App = () => {
           <Route path='/reset-password' element={<ResetPassword />} />
           <Route path='/address-section' element={<AddressSection />} />
           <Route path='/delete-account-section' element={<DeleteAccountSection />} />
-          <Route path='/detailes-section' element={<DetailsSection />} />
+          <Route path='/details-section' element={<DetailsSection />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/purchase-section' element={<PurchasesSection />} />
           <Route path='/reports-section' element={<ReportsSection />} />
