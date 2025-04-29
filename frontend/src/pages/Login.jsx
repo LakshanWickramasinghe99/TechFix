@@ -531,6 +531,7 @@ const Login = () => {
             
             // Set authentication state
             setIsLoggedin(true);
+
             
             // Store user data in context
             setUserData({
@@ -549,6 +550,11 @@ const Login = () => {
             const redirectTo = location.state?.from?.pathname || '/';
             navigate(redirectTo);
             
+
+            getUserData();
+            setUserData(response.data.user);
+            navigate('/shome');
+
         } catch (error) {
             console.error("Login Error:", error);
             toast.dismiss();
