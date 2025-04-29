@@ -61,7 +61,14 @@ export const register = async (req, res) => {
             password: hashedPassword,
             verifyOtp: otp,
             verifyOtpExpireAt: otpExpiration,
-            isAccountVerified: false
+            isAccountVerified: false,
+            nickname: "",
+            birthyear: null,
+            gender: "",
+            country: "",
+            photo: "",
+            addresses: [],
+            purchases: []
         });
 
         // Save user to database
@@ -153,7 +160,15 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 
         });
 
-        return res.status(200).json({ success: true });
+        // Return user data along with success
+        return res.status(200).json({ 
+            success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
 
     } catch (error) {
         console.error('Login error:', error);

@@ -1,9 +1,14 @@
 import express from 'express';
+import { 
+    getUserData,
+} from '../controllers/userController.js';
 import userAuth from '../middleware/userAuth.js';
-import { getUserData } from '../controllers/userController.js';
 
-const userRouter = express.Router();
+const router = express.Router();
 
-userRouter.get('/data', userAuth, getUserData)
+// Protected routes
+router.get('/data', userAuth, getUserData);
+// Add if needed:
+// router.put('/update', userAuth, updateUserData);
 
-export default userRouter;
+export default router;

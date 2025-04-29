@@ -27,27 +27,54 @@ const userAuth = async (req, res, next)=>{
 
 export default userAuth;
 */
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+import userModel from '../models/userModel.js'; // Make sure to import your user model
 
 const userAuth = async (req, res, next) => {
     try {
-        const { token } = req.cookies;
-
+        // 1. Get token from cookies or Authorization header
+        const token = req.cookies?.token || 
+                     req.headers?.authorization?.replace('Bearer ', '');
+        
         if (!token) {
-            return res.status(401).json({ success: false, message: 'Not Authorized. Login Again' });
+            return res.status(401).json({
+                success: false,
+                message: 'Authorization token is required'
+            });
         }
 
-        const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
-
-        if (tokenDecode?.id) {
-            req.body.userId = tokenDecode.id;
-            return next();
-        } else {
-            return res.status(401).json({ success: false, message: 'Not Authorized. Login Again' });
+        // 2. Verify JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // 3. Check if user still exists in database
+        const user = await userModel.findById(decoded.id);
+        if (!user) {
+            res.clearCookie('token');
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
         }
 
+        // 4. Attach user ID to request
+        req.userId = decoded.id;
+        next();
     } catch (error) {
-        return res.status(401).json({ success: false, message: 'Invalid or Expired Token' });
+        console.error('Authentication error:', error);
+        
+        let message = 'Invalid or expired token';
+        if (error.name === 'TokenExpiredError') {
+            message = 'Token expired';
+        } else if (error.name === 'JsonWebTokenError') {
+            message = 'Invalid token';
+        }
+        
+        res.clearCookie('token');
+        
+        return res.status(401).json({
+            success: false,
+            message
+        });
     }
 };
 
