@@ -49,7 +49,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/products', ProductRoutes);
-app.use('/api/user', profileRouter);
+// Removed duplicate mounting of profileRouter on '/api/user' to avoid conflicts.
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
