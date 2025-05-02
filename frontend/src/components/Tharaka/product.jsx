@@ -1,8 +1,17 @@
-// Product.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Star } from 'lucide-react';
+import {
+  WhatsappShareButton,
+  WhatsappIcon,
+  FacebookShareButton,
+  FacebookIcon,
+  TwitterShareButton,
+  TwitterIcon,
+  EmailShareButton,
+  EmailIcon,
+} from "react-share";
 
 const Product = () => {
   const { id } = useParams();
@@ -73,7 +82,7 @@ const Product = () => {
     if (!exists) {
       compareList.push(product);
       localStorage.setItem('compareList', JSON.stringify(compareList));
-      navigate('/compare');
+      window.dispatchEvent(new Event('storage')); // So the bar updates immediately
     } else {
       alert('Product already in compare list.');
     }
@@ -106,6 +115,10 @@ const Product = () => {
           ))
       : [];
   };
+
+  const [showShare, setShowShare] = useState(false);
+  const shareUrl = `http://localhost:3000/product/${id}`;
+  const shareTitle = product ? product.title : '';
 
   if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>;
   if (!product) return <div className="text-center py-20 text-red-500">Product not found</div>;
@@ -143,10 +156,34 @@ const Product = () => {
           <p className="text-gray-500 mb-2">
             Brand: <span className="font-medium">{product.brand}</span>
           </p>
-          <div className="text-3xl font-bold text-red-600 mb-3">${product.salePrice || product.price}</div>
-          {product.salePrice && (
-            <p className="line-through text-gray-400 text-sm mb-4">${product.price}</p>
-          )}
+          {product.salePrice ? (
+  <div className="mb-4">
+    <div className="text-3xl font-bold text-red-600 mb-1">
+      ${product.salePrice.toFixed(2)} <span className="text-sm text-gray-400">excl. VAT</span>
+    </div>
+    <div className="text-sm text-gray-500 line-through mb-1">${product.price.toFixed(2)}</div>
+    <div className="flex items-center gap-2 mb-2">
+      <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
+        Save ${ (product.price - product.salePrice).toFixed(2) }
+      </span>
+      <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">
+        -{ Math.round(((product.price - product.salePrice) / product.price) * 100) }%
+      </span>
+    </div>
+    <div className="text-sm text-gray-700">
+      or <span className="font-semibold text-blue-600">
+        ${(product.salePrice / 36).toFixed(2)}
+      </span> per month for 36 months
+    </div>
+  </div>
+) : (
+  <div className="mb-4">
+    <div className="text-3xl font-bold text-gray-900 mb-1">
+      ${product.price.toFixed(2)} <span className="text-sm text-gray-400">excl. VAT</span>
+    </div>
+  </div>
+)}
+
 
           <div className="flex items-center gap-2 text-yellow-500 mb-2">
             {[...Array(5)].map((_, i) => (
@@ -159,7 +196,7 @@ const Product = () => {
               />
             ))}
             <span className="text-gray-600 text-sm">
-              ({averageRating.toFixed(1)} out of 5, {reviews.length} reviews)
+              ({averageRating.toFixed(1)}{reviews.length} reviews)
             </span>
           </div>
 
@@ -182,7 +219,6 @@ const Product = () => {
               <option value="LK">Sri Lanka</option>
               <option value="IN">India</option>
               <option value="US">United States</option>
-              {/* Add more countries as needed */}
             </select>
             <div className="text-green-600 text-sm font-medium">
               Expected Thursday, 15-May-2025
@@ -211,9 +247,39 @@ const Product = () => {
 
           {/* Action Buttons */}
           <div className="flex gap-2 mb-4">
-            <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border text-sm">
-              🔗 Share
-            </button>
+            <div className="relative flex-1">
+              <button
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border text-sm w-full"
+                onClick={() => setShowShare((v) => !v)}
+                type="button"
+              >
+                🔗 Share
+              </button>
+              {showShare && (
+                <div className="absolute z-10 left-0 mt-2 bg-white border rounded shadow-md p-2 flex flex-col gap-2">
+                  <WhatsappShareButton url={shareUrl} title={shareTitle}>
+                    <div className="flex items-center gap-2">
+                      <WhatsappIcon size={28} round /> WhatsApp
+                    </div>
+                  </WhatsappShareButton>
+                  <FacebookShareButton url={shareUrl} quote={shareTitle}>
+                    <div className="flex items-center gap-2">
+                      <FacebookIcon size={28} round /> Facebook
+                    </div>
+                  </FacebookShareButton>
+                  <TwitterShareButton url={shareUrl} title={shareTitle}>
+                    <div className="flex items-center gap-2">
+                      <TwitterIcon size={28} round /> Twitter
+                    </div>
+                  </TwitterShareButton>
+                  <EmailShareButton url={shareUrl} subject={shareTitle}>
+                    <div className="flex items-center gap-2">
+                      <EmailIcon size={28} round /> Email
+                    </div>
+                  </EmailShareButton>
+                </div>
+              )}
+            </div>
             <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md border text-sm">
               ❤ Favorite
             </button>

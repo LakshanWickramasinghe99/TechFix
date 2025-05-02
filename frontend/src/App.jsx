@@ -1,5 +1,7 @@
 import React from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import Chatbot from "react-chatbot-kit";
+import "react-chatbot-kit/build/main.css";
 import SHome from "./pages/Home";
 import Login from "./pages/Login";
 import EmailVerify from "./pages/EmailVerify";
@@ -24,20 +26,22 @@ import Analytics from "./Components/Nalinda/pages/analytics";
 import EditProduct from "./Components/Nalinda/editproduct";
 import AdminLayout from "./Components/Nalinda/adminlayout";
 import ItemDetails from "./Components/Nalinda/pages/productview";
-
-
+import CompareBar from "./Components/Tharaka/CompareBar";
+import config from "./Components/Tharaka/Config";
+import MessageParser from "./Components/Tharaka/MessageParser";
+import ActionProvider from "./Components/Tharaka/ActionProvider";
+import ChatWidget from "./Components/Tharaka/ChatWidget";
 
 const App = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Define routes where Navbar should not be displayed
-
-  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password","/admin","/admin/products","/admin/productview/:id","/admin/editproduct/:id",
-    "/admin/dashboard", "/admin/analytics" , "/admin/addproduct"
+  const hideNavbarRoutes = [
+    "/shome", "/login", "/email-verify", "/reset-password", "/admin", "/admin/products",
+    "/admin/productview/:id", "/admin/editproduct/:id", "/admin/dashboard", "/admin/analytics", "/admin/addproduct"
   ];
 
   return (
-
     <ErrorBoundary>
       <div>
         <ToastContainer />
@@ -45,7 +49,6 @@ const App = () => {
         {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
         <Routes>
           <Route path='/profile' element={<Profile />} />
-
           <Route path="/shome" element={<SHome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/email-verify" element={<EmailVerify />} />
@@ -67,20 +70,19 @@ const App = () => {
           <Route path="/order" element={<Order />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/compare" element={<Compare />} />
-          
-
-            
-
           <Route path="/admin" element={<AdminLayout />}>
-        <Route path="products" element={<ProductList />} />
-        <Route path="/admin/productview/:id" element={<ItemDetails/>} />
-        <Route path="/admin/editproduct/:id" element={<EditProduct />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="addproduct" element={<AddProductPage />} /> 
-        </Route>
-
+            <Route path="products" element={<ProductList />} />
+            <Route path="/admin/productview/:id" element={<ItemDetails/>} />
+            <Route path="/admin/editproduct/:id" element={<EditProduct />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="addproduct" element={<AddProductPage />} /> 
+          </Route>
         </Routes>
+        <CompareBar onCompare={() => navigate("/compare")} />
+
+        
+        <ChatWidget />
 
       </div>
     </ErrorBoundary>
