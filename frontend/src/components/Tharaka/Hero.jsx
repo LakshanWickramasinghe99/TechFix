@@ -52,7 +52,7 @@ const Hero = () => {
                 {BannerList.map((banner) => (
                     <div key={banner.id} className='relative'>
                         {/* Container to maintain equal width and height */}
-                        <div className='w-full h-[300px] md:h-[400px] lg:h-[600px]'>
+                        <div className='w-full h-[300px] md:h-[400px] lg:h-[500px]'>
                             {/* Image with border, blue color, and object-cover to ensure it fills the container */}
                             <img 
                                 src={banner.img} 

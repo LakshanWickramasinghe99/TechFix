@@ -1,97 +1,104 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const Order = () => {
-  const location = useLocation();
+const OrderPage = () => {
   const navigate = useNavigate();
-  const { product, quantity: initialQuantity } = location.state || {};
+  const location = useLocation();
+  const product = location.state?.product;
 
-  const [quantity, setQuantity] = useState(initialQuantity || 1); // State to manage the quantity
+  const [address, setAddress] = useState({
+    street: '',
+    city: '',
+    postalCode: '',
+    country: ''
+  });
 
-  // If no product data is found, redirect back
-  if (!product) {
-    return (
-      <div className="text-center text-red-500 text-lg font-semibold">
-        No order details found. <button onClick={() => navigate(-1)}>Go Back</button>
-      </div>
-    );
-  }
+  const [quantity, setQuantity] = useState(1);
 
-  const handleConfirmOrder = () => {
-    // Save the order data to localStorage
-    const orderDetails = { product, quantity };
-    localStorage.setItem('order', JSON.stringify(orderDetails));  // Saving to localStorage
-
-    // Navigate to the OrderDetails page and pass the order data
-    navigate('/order-details', {
-      state: { product, quantity },
-    });
+  const handleChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value });
   };
 
-  const handleDeleteOrder = () => {
-    // You can navigate back or show a message depending on your logic
-    navigate('/');
-  };
+  const handleOrder = async () => {
+    try {
+      const totalAmount = (product.salePrice || product.price) * quantity;
 
-  const handleUpdateQuantity = (newQuantity) => {
-    if (newQuantity > 0) {
-      setQuantity(newQuantity); // Update the quantity state
+      const orderData = {
+        customerId: "replace_with_logged_in_user_id",
+        customerName: "replace_with_logged_in_user_name",
+        customerEmail: "replace_with_logged_in_user_email",
+        address,
+        items: [
+          {
+            itemId: product._id,
+            title: product.title,
+            quantity,
+            price: product.salePrice || product.price
+          }
+        ],
+        totalAmount
+      };
+
+      const res = await axios.post('http://localhost:5000/api/orders', orderData);
+
+      alert("Order placed successfully!");
+      navigate('/'); // or to a confirmation page
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      alert("Something went wrong!");
     }
   };
 
+  if (!product) return <div className="text-center mt-20 text-red-500">No product selected for order.</div>;
+
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-4">Order Summary</h1>
+    <div className="min-h-screen p-8 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">Shipping Address</h2>
 
-      <div className="bg-white p-6 shadow-lg rounded-lg">
-        <img
-          src={product.image}
-          alt={product.title}
-          className="w-32 h-32 object-contain mb-4"
-        />
-        <h2 className="text-xl font-semibold">{product.title}</h2>
-        <p className="text-gray-600">{product.specs}</p>
-        <p className="text-gray-600">{product.ram}</p>
-        <p className="text-lg font-bold text-red-600">LKR {product.price * quantity}</p>
-        <p className="text-gray-700">Quantity: {quantity}</p>
+      <div className="space-y-4 mb-8">
+        {['street', 'city', 'postalCode', 'country'].map((field) => (
+          <input
+            key={field}
+            name={field}
+            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+            value={address[field]}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg"
+            required
+          />
+        ))}
+      </div>
 
-        {/* Quantity update buttons */}
-        <div className="flex items-center mt-4">
-          <button
-            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-l-lg hover:bg-gray-300 transition"
-            onClick={() => handleUpdateQuantity(quantity - 1)}
-          >
-            −
-          </button>
-          <span className="px-4 py-1 bg-gray-100 text-gray-900 border">{quantity}</span>
-          <button
-            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-r-lg hover:bg-gray-300 transition"
-            onClick={() => handleUpdateQuantity(quantity + 1)}
-          >
-            +
-          </button>
-        </div>
-
-        <div className="mt-4 flex gap-4">
-          {/* Confirm Order Button */}
-          <button
-            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition"
-            onClick={handleConfirmOrder}
-          >
-            ✅ Confirm Order
-          </button>
-
-          {/* Delete Order Button */}
-          <button
-            className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-800 transition"
-            onClick={handleDeleteOrder}
-          >
-            🗑️ Delete Order
-          </button>
+      <div className="mb-8">
+        <h3 className="text-lg font-bold mb-2">Product</h3>
+        <div className="flex items-center space-x-4">
+          <img src={`http://localhost:5000${product.image}`} alt={product.title} className="w-24 h-24 object-contain" />
+          <div>
+            <p className="font-medium">{product.title}</p>
+            <p>Price: ${product.salePrice || product.price}</p>
+            <div className="flex items-center space-x-2 mt-2">
+              <label>Quantity:</label>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="w-16 border px-2 py-1 rounded"
+              />
+            </div>
+          </div>
         </div>
       </div>
+
+      <button
+        onClick={handleOrder}
+        className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition"
+      >
+        Place Order
+      </button>
     </div>
   );
 };
 
-export default Order;
+export default OrderPage;

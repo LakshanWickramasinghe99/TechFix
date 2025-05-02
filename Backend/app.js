@@ -7,7 +7,10 @@ import { authRouter } from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import connectDB from './config/db.js';
 import itemRoutes from './routes/itemRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 import bodyParser from 'body-parser';
+
 
 dotenv.config();
 // MongoDB connection
@@ -66,6 +69,8 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/orders', orderRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Error Handling
 app.use((err, req, res, next) => {

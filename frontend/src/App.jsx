@@ -14,8 +14,8 @@ import Product from "./Components/Tharaka/product";
 import Banner from "./Components/Tharaka/Banner";
 import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
-import OrderDetails from "./Components/Tharaka/OrderDetails";
 import Cart from "./Components/Tharaka/Cart";
+import Compare from "./Components/Tharaka/Compare";
 import Profile from './pages/Profile';
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
@@ -24,7 +24,6 @@ import Analytics from "./Components/Nalinda/pages/analytics";
 import EditProduct from "./Components/Nalinda/editproduct";
 import AdminLayout from "./Components/Nalinda/adminlayout";
 import ItemDetails from "./Components/Nalinda/pages/productview";
-
 
 
 
@@ -66,8 +65,10 @@ const App = () => {
           />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/order" element={<Order />} />
-          <Route path="/order-details" element={<OrderDetails />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/compare" element={<Compare />} />
+          
+
             
 
           <Route path="/admin" element={<AdminLayout />}>
