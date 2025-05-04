@@ -17,8 +17,8 @@ import {
 const router = express.Router();
 
 // Profile routes
-router.get('/', getProfile); 
-router.get('/basic', getUserBasicData);
+router.get('/',userAuth, getProfile); 
+router.get('/basic',userAuth, getUserBasicData);
 router.put('/updateDetails',userAuth, updateDetails);
 router.put('/photo', updatePhoto);
 
@@ -39,6 +39,5 @@ router.post('/reports', generateReport);
 router.get('/countries', getCountries);
 
 // Account management
-router.delete('/account', deleteAccount);
-
+router.delete('/account', userAuth, deleteAccount);
 export default router;

@@ -2,7 +2,6 @@ import userModel from "../models/userModel.js";
 
 export const getUserData = async (req, res) => {
     try {
-        // Changed 'user' to 'userModel' (capitalization matters)
         const user = await userModel.findById(req.userId)
             .select('-password -verifyOtp -resetOtp');
             
@@ -19,7 +18,6 @@ export const getUserData = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                // Include other fields from your schema as needed
                 isAccountVerified: user.isAccountVerified,
                 photo: user.photo,
                 addresses: user.addresses

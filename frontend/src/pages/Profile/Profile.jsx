@@ -20,6 +20,7 @@ const Profile = () => {
       const response = await axios.get(`${backendUrl}/api/profile/basic`, {
         withCredentials: true,
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -48,6 +49,7 @@ const Profile = () => {
       const response = await axios.get(`${backendUrl}/api/profile`, {
         withCredentials: true,
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });

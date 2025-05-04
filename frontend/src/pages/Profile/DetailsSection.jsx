@@ -2,10 +2,45 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { countries as countryData } from 'countries-list';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+import { useAppContext } from '../../context/AppContext';
 
 const DetailsSection = ({ userData, setUserData }) => {
+  const { backendUrl, token } = useAppContext();
+  const [isLoading, setIsLoading] = useState(!userData);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${backendUrl}/api/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setUserData(response.data.userData);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+        toast.error('Failed to load profile data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!userData && token) {
+      fetchUserData();
+    }
+  }, [token, userData, backendUrl, setUserData]);
+
+  // Add loading state
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
+
+  
   // Memoize the country list to prevent recreation on every render
   const countryList = useMemo(() => 
     Object.values(countryData)
@@ -21,7 +56,6 @@ const DetailsSection = ({ userData, setUserData }) => {
   const [highlightedIndexDetails, setHighlightedIndexDetails] = useState(-1);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(!userData);
   
   const countryDropdownDetailsRef = useRef(null);
   const countryInputDetailsRef = useRef(null);
@@ -33,41 +67,13 @@ const DetailsSection = ({ userData, setUserData }) => {
   }, []);
 
   // Initialize form data with userData or empty values
-  const [formData, setFormData] = useState(() => ({
+  const [formData, setFormData] = useState({
     email: userData?.email || '',
     nickname: userData?.nickname || '',
     birthyear: userData?.birthyear || '',
     gender: userData?.gender || 'Prefer not to say',
     country: userData?.country || '',
-  }));
-
-  // Load user data if not provided
-  useEffect(() => {
-    if (!userData) {
-      const loadUserData = async () => {
-        try {
-          setIsLoading(true);
-          const response = await axios.get(`${API_BASE_URL}/api/user`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-          });
-          setUserData(response.data.user);
-          setFormData({
-            email: response.data.user?.email || '',
-            nickname: response.data.user?.nickname || '',
-            birthyear: response.data.user?.birthyear || '',
-            gender: response.data.user?.gender || 'Prefer not to say',
-            country: response.data.user?.country || '',
-          });
-        } catch (error) {
-          console.error('Failed to load user data:', error);
-          toast.error('Failed to load user data');
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      loadUserData();
-    }
-  }, [userData, setUserData]);
+  });
 
   // Update form data when userData changes
   useEffect(() => {
@@ -90,6 +96,21 @@ const DetailsSection = ({ userData, setUserData }) => {
         : countryList
     );
   }, [countrySearchDetails, countryList]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (countryDropdownDetailsRef.current && 
+          !countryDropdownDetailsRef.current.contains(event.target)) {
+        setShowCountryDropdownDetails(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Handle keyboard navigation for country dropdown
   const handleKeyDownDetails = (e) => {
@@ -167,7 +188,7 @@ const DetailsSection = ({ userData, setUserData }) => {
       setError(validationError);
       return;
     }
-
+  
     try {
       setIsSaving(true);
       
@@ -179,9 +200,14 @@ const DetailsSection = ({ userData, setUserData }) => {
       };
   
       const response = await axios.put(
-        `${API_BASE_URL}/api/user/updateDetails`,
+        `${backendUrl}/api/profile/updateDetails`,
         payload,
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        { 
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
   
       if (response.data.success) {
@@ -191,21 +217,15 @@ const DetailsSection = ({ userData, setUserData }) => {
         };
         
         setUserData(updatedUserData);
-        setFormData({
-          email: updatedUserData.email,
-          nickname: updatedUserData.nickname,
-          birthyear: updatedUserData.birthyear,
-          gender: updatedUserData.gender,
-          country: updatedUserData.country
-        });
-        
         toast.success('Profile updated successfully!');
         setIsEditingDetails(false);
         setError(null);
       }
     } catch (error) {
       console.error('Update error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+      const errorMessage = error.response?.data?.message || 'Failed to update profile';
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -223,31 +243,28 @@ const DetailsSection = ({ userData, setUserData }) => {
     setError(null);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center">
         <div className="relative mb-4 group">
           <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-5xl font-bold overflow-hidden">
             {userData?.photo ? (
-              <img src={userData.photo} alt="Profile" className="w-full h-full object-cover" />
+              <img 
+                src={userData.photo} 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '';
+                  e.target.className = 'w-full h-full bg-gray-300 flex items-center justify-center';
+                }}
+              />
             ) : (
-              userData?.name?.charAt(0).toUpperCase() || 'U'
+              <span className="text-gray-600">
+                {userData?.name?.charAt(0).toUpperCase() || 'U'}
+              </span>
             )}
           </div>
-          <button className="absolute bottom-2 right-2 bg-indigo-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
         </div>
         <h2 className="text-xl font-bold">{userData?.name || 'User'}</h2>
       </div>
@@ -296,20 +313,9 @@ const DetailsSection = ({ userData, setUserData }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm text-gray-500 mb-1">Email</label>
-            {isEditingDetails ? (
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                disabled
-              />
-            ) : (
-              <div className="p-3 bg-gray-50 rounded border border-gray-200">
-                {userData?.email || 'Not provided'}
-              </div>
-            )}
+            <div className="p-3 bg-gray-50 rounded border border-gray-200">
+              {userData?.email || 'Not provided'}
+            </div>
           </div>
           <div>
             <label className="block text-sm text-gray-500 mb-1">Nickname</label>
@@ -321,6 +327,7 @@ const DetailsSection = ({ userData, setUserData }) => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 maxLength={30}
+                placeholder="Enter nickname"
               />
             ) : (
               <div className="p-3 bg-gray-50 rounded border border-gray-200">

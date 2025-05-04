@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({
             success: false,
@@ -191,7 +191,6 @@ export const logout = async (req, res)=>{
         return res.json({ success: false, message: error.message});
     }
 }
-
 
 //send verification OTP to the User's Email
 export const sendVerifyOtp = async (req, res) => {

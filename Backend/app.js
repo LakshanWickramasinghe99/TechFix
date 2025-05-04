@@ -56,6 +56,10 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
+/*app.get('/api/user', userAuth, (req, res) => {
+  res.redirect('/api/profile');
+});*/
+
 // Error Handling
 app.use((err, req, res, next) => {
   console.error('Error:', err);
