@@ -15,6 +15,8 @@ import ProductRoutes from './routes/ProductRoutes.js';
 
 import connectDB from './config/db.js';
 import itemRoutes from './routes/itemRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 import bodyParser from 'body-parser';
 
 
@@ -75,6 +77,10 @@ mongoose.connect(DB)
 // Route Mounting (Fixed)
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+
+app.use('/api/orders', orderRoutes);
+app.use('/api/reviews', reviewRoutes);
+
 app.use('/api/profile', profileRouter);
 app.use('/api/products', ProductRoutes);
 // Removed duplicate mounting of profileRouter on '/api/user' to avoid conflicts.
@@ -83,6 +89,7 @@ app.use('/api/products', ProductRoutes);
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
+
 
 // Error Handling
 app.use((err, req, res, next) => {

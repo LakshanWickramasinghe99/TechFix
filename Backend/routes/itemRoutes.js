@@ -4,6 +4,16 @@ import upload from '../middleware/upload.js';
 
 const router = express.Router();
 
+router.get('/api/categories', async (req, res) => {
+    try {
+      const categories = await Category.find();
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching categories' });
+    }
+  });
+  
+
 // POST: Add a new item
 router.post('/items', upload.single('image'), createItem);
 

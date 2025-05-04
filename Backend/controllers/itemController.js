@@ -3,12 +3,23 @@ import path from 'path';
 
 const getItems = async (req, res) => {
   try {
-    const items = await Item.find();
+    const filter = {};
+
+    if (req.query.category) {
+      filter.category = req.query.category;
+    }
+
+    if (req.query.brand) {
+      filter.brand = req.query.brand;
+    }
+
+    const items = await Item.find(filter);
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching items' });
   }
 };
+
 
 const getItem = async (req, res) => {
   try {

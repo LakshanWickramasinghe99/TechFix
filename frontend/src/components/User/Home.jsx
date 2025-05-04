@@ -1,112 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import mac1 from "../../assets/mac.jpg";
-import mac2 from "../../assets/mac2.jpg";
-import mac3 from "../../assets/mac3.jpg";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const TodaysDeal = () => {
+// Brand images (Ensure these paths are correct)
+import appleImg from '../../assets/apple.png';
+import samsungImg from '../../assets/samsung.png';
+import sonyImg from '../../assets/sony.png';
+import hpImg from '../../assets/hp.png';
+import lenovoImg from '../../assets/lenovo.png';
+import huaweiImg from '../../assets/huawei.png';
+import oppoImg from '../../assets/oppo.png';
+import oneplusImg from '../../assets/one-plus.png';
+import xiaomiImg from '../../assets/xiaomi.png';
+
+const brandImages = {
+  apple: appleImg,
+  samsung: samsungImg,
+  sony: sonyImg,
+  hp: hpImg,
+  lenovo: lenovoImg,
+  huawei: huaweiImg,
+  oppo: oppoImg,
+  oneplus: oneplusImg,
+  xiaomi: xiaomiImg,
+};
+
+const Home = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const navigate = useNavigate();
 
-  // Countdown Timer State
-  const [timeLeft, setTimeLeft] = useState(3 * 60 * 60); // 3 hours in seconds
+  const query = new URLSearchParams(location.search);
+  const selectedBrand = query.get("brand");
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
+    const fetchItems = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/items');
+        const filtered = selectedBrand
+          ? res.data.filter((item) => item.brand.toLowerCase() === selectedBrand.toLowerCase())
+          : res.data;
+        setItems(filtered);
+        console.log('Home: Fetched items:', filtered);
+      } catch (err) {
+        console.error('Home: Failed to fetch items:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => clearInterval(timer);
-  }, []);
+    fetchItems();
+  }, [selectedBrand]);
 
-  // Convert seconds to HH:MM:SS format
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  const brandImage = selectedBrand ? brandImages[selectedBrand.toLowerCase()] : null;
+
+  const getDescriptionAsBadges = (description) => {
+    return description
+      ? description
+          .split('\n')
+          .filter((line) => line.trim() !== '')
+          .map((line, index) => (
+            <span
+              key={index}
+              className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full mr-2 mt-2 inline-block"
+            >
+              {line}
+            </span>
+          ))
+      : [];
   };
 
-  const laptops = [
-    {
-      id: 1,
-      title: 'Apple MacBook Air Laptop',
-      specs: 'Apple Intelligence, 10 Core GPU',
-      ram: '24 GB RAM / 512 GB SSD GPU',
-      price: 470980,
-      image: mac1,
-    },
-    {
-      id: 2,
-      title: 'Apple MacBook Air Laptop',
-      specs: 'Apple Intelligence, 10 Core GPU',
-      ram: '24 GB RAM / 512 GB SSD GPU',
-      price: 530680,
-      image: mac2,
-    },
-    {
-      id: 3,
-      title: 'Apple MacBook Air Laptop',
-      specs: 'Apple Intelligence, 10 Core GPU',
-      ram: '24 GB RAM / 512 GB SSD GPU',
-      price: 670930,
-      image: mac3,
-    }
-  ];
+  const handleProductClick = (item) => {
+    console.log('Home: Product clicked - ID:', item._id);
+    navigate(`/product/${item._id}`);
+    console.log('Home: Navigation triggered to /product/' + item._id);
+  };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Title */}
-      <h1 className="text-4xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-[#3674B5]">
-        ⚡ TODAY'S HOT DEALS
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-6 py-10">
+      <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-10 flex justify-center items-center gap-4">
+        {brandImage && (
+          <img
+            src={brandImage}
+            alt={selectedBrand}
+            className="w-10 h-10 object-contain"
+          />
+        )}
+        {selectedBrand ? `${selectedBrand} Products` : '🛍️ All Products'}
       </h1>
 
-      {/* Countdown Timer */}
-      <div className="flex justify-center items-center mb-8">
-        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-lg font-bold px-6 py-2 rounded-full shadow-lg animate-pulse">
-          ⏳ Offer Ends in: {formatTime(timeLeft)}
+      {loading ? (
+        <div className="text-center text-lg text-gray-600">Loading...</div>
+      ) : items.length === 0 ? (
+        <div className="text-center text-red-500 text-lg">No items found.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {items.map((item) => (
+            <div
+              key={item._id}
+              onClick={() => handleProductClick(item)}
+              className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 cursor-pointer group overflow-hidden"
+            >
+              {/* Image */}
+              <div className="w-full h-48 bg-white overflow-hidden">
+                <img
+                  src={`http://localhost:5000${item.image}`}
+                  alt={item.title}
+                  className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="p-5">
+                <h2 className="text-lg font-semibold text-gray-800 mb-1 truncate">
+                  {item.title}
+                </h2>
+                <p className="text-xs text-gray-500 mb-2">Brand: {item.brand}</p>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`text-base font-bold ${item.salePrice ? 'text-gray-400 line-through' : 'text-blue-700'}`}>
+                    ${item.price.toLocaleString()}
+                  </span>
+                  {item.salePrice && (
+                    <span className="text-lg font-extrabold text-red-600">
+                      ${item.salePrice.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap">
+                  {getDescriptionAsBadges(item.description)}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
-        {laptops.map((laptop) => (
-          <div 
-            key={laptop.id} 
-            className="relative bg-white/90 backdrop-blur-lg border border-gray-300 rounded-2xl shadow-xl p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:scale-105"
-          >
-            {/* Floating Sale Tag */}
-            <div className="absolute top-4 left-4 bg-red-500 text-white text-sm px-3 py-1 rounded-full font-semibold shadow-md">
-              🔥 Hot Deal
-            </div>
-
-            {/* Laptop Image */}
-            <div className="mb-6 w-full flex justify-center">
-              <img 
-                src={laptop.image} 
-                alt={laptop.title} 
-                className="w-full h-48 object-contain rounded-lg cursor-pointer hover:opacity-90 transition duration-300"
-                onClick={() => navigate(`/product/${laptop.id}`, { state: laptop })}
-              />
-            </div>
-
-            {/* Laptop Details */}
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800">{laptop.title}</h2>
-              <p className="text-gray-600">{laptop.specs}</p>
-              <p className="text-gray-600 font-medium">{laptop.ram}</p>
-            </div>
-
-            {/* Price */}
-            <div className="text-center">
-              <p className="text-red-600 font-bold text-2xl">
-                LKR {laptop.price.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+      )}
     </div>
   );
 };
 
-export default TodaysDeal;
+export default Home;

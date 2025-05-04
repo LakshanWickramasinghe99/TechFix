@@ -1,68 +1,172 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { IoCartSharp } from "react-icons/io5";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Cart = () => {
   const navigate = useNavigate();
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const [cart, setCart] = useState([]);
+  const [userToken] = useState(localStorage.getItem('token') || null);
 
-  // Function to remove an item from the cart
-  const handleRemoveItem = (index) => {
-    // Remove the item from the cart by filtering out the selected index
-    const updatedCart = cart.filter((_, itemIndex) => itemIndex !== index);
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCart(storedCart);
+  }, []);
 
-    // Update local storage with the new cart
+  const saveCartToLocalStorage = (updatedCart) => {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-
-    // Reload the component to reflect changes
-    window.location.reload();
+    setCart(updatedCart);
   };
 
-  // Function to handle checkout
+  const updateBackendCart = async (updatedCart) => {
+    if (!userToken) return;
+    try {
+      await axios.post('http://localhost:5000/api/cart', { items: updatedCart }, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+    } catch (err) {
+      console.error('Failed to update backend cart:', err);
+    }
+  };
+
+  const handleRemoveItem = (index) => {
+    const updatedCart = cart.filter((_, i) => i !== index);
+    saveCartToLocalStorage(updatedCart);
+    updateBackendCart(updatedCart);
+    toast.success('Item removed');
+  };
+
+  const handleQuantityChange = (index, delta) => {
+    const updatedCart = [...cart];
+    updatedCart[index].quantity = Math.max(1, updatedCart[index].quantity + delta);
+    saveCartToLocalStorage(updatedCart);
+    updateBackendCart(updatedCart);
+    toast.info('Quantity updated');
+  };
+
+  const getTotalPrice = () =>
+    cart.reduce((sum, item) => sum + item.product.salePrice * item.quantity, 0);
+
   const handleCheckout = () => {
-    // Navigate to checkout page or proceed with the order process
+    if (cart.length === 0) {
+      toast.warning('Your cart is empty');
+      return;
+    }
     navigate('/checkout');
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
+    <div className="bg-gray-50 min-h-screen py-10 px-4 md:px-10">
+      <h1 className="text-3xl font-semibold flex items-center mb-6">
+        <IoCartSharp className="text-grey-500" size={30} />
+        Cart <span className="ml-2 text-lg text-gray-500">({cart.length} item{cart.length !== 1 ? 's' : ''})</span>
+      </h1>
 
       {cart.length === 0 ? (
-        <div className="text-center text-gray-600">Your cart is empty.</div>
+        <div className="text-center text-gray-500 text-xl mt-16">Your cart is empty.</div>
       ) : (
-        <div className="bg-white p-6 shadow-lg rounded-lg">
-          <ul>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4">
             {cart.map((item, index) => (
-              <li key={index} className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <img 
-                    src={item.product.image} 
-                    alt={item.product.title} 
-                    className="w-16 h-16 object-contain mr-4" 
+              <div key={index} className="bg-white border rounded-lg shadow-sm p-4 flex justify-between items-start">
+                <div className="flex gap-4">
+                  <img
+                    src={`http://localhost:5000${item.product.image}`}
+                    alt={item.product.title}
+                    className="w-24 h-24 object-contain"
                   />
-                  <div>
+                  <div className="space-y-2 max-w-md">
                     <h2 className="text-lg font-semibold">{item.product.title}</h2>
-                    <p className="text-gray-600">LKR {item.product.price}</p>
-                    <p className="text-gray-600">Quantity: {item.quantity}</p>
+
+                    <div className="inline-block bg-gray-100 text-sm text-gray-700 px-3 py-1 rounded-full shadow-sm">
+                      {item.product.description}
+                    </div>
+
+
+                    <div className="flex flex-wrap gap-1 text-sm text-blue-600">
+                      <span className="bg-blue-100 px-2 py-0.5 rounded">Bluetooth</span>
+                      <span className="bg-blue-100 px-2 py-0.5 rounded">USB-C</span>
+                      <span className="bg-blue-100 px-2 py-0.5 rounded">Mic</span>
+                      <span className="bg-blue-100 px-2 py-0.5 rounded">Grey</span>
+                    </div>
+
+                    <div className="text-sm mt-1 text-green-700 bg-green-100 px-2 py-0.5 rounded w-max">
+                      Save: $ {item.product.price - item.product.salePrice}
+                    </div>
                   </div>
                 </div>
-                <p className="text-lg font-bold text-red-600">
-                  LKR {item.product.price * item.quantity}
-                </p>
-                {/* Remove Button */}
-                <button 
-                  className="ml-4 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-800 transition"
-                  onClick={() => handleRemoveItem(index)}
-                >
-                  🗑️ Remove
-                </button>
-              </li>
-            ))}
-          </ul>
 
-          <div className="mt-6 flex justify-between items-center">
-            <button 
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition"
+                <div className="flex flex-col items-end justify-between h-full">
+                  <div className="text-right">
+                    <p className="text-red-600 font-bold text-lg">
+                      $ {item.product.salePrice}
+                    </p>
+                    <p className="text-sm line-through text-gray-400">$ {item.product.price}</p>
+                  </div>
+
+                  {/* Quantity Buttons */}
+                  <div className="flex items-center mt-4 space-x-2">
+                    <button
+                      onClick={() => handleQuantityChange(index, -1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300"
+                    >
+                      −
+                    </button>
+                    <span className="w-8 text-center">{item.quantity}</span>
+                    <button
+                      onClick={() => handleQuantityChange(index, 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => handleRemoveItem(index)}
+                    className="text-sm text-red-500 hover:underline mt-2"
+                  >
+                    🗑 Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary Panel */}
+          <div className="bg-white border rounded-lg shadow-md p-6 space-y-4">
+            <div className="text-sm space-y-1">
+              <p className="flex justify-between">
+                <span>Subtotal</span>
+                <span>LKR {getTotalPrice()}</span>
+              </p>
+              <p className="flex justify-between">
+                <span>Total Shipping Fees</span>
+                <span>$ 15</span>
+              </p>
+              <p className="flex justify-between">
+                <span>Custom Duty</span>
+                <span>$ 20.00</span>
+              </p>
+            </div>
+
+            <div className="border-t pt-3">
+              <p className="text-xl font-bold text-red-600 flex justify-between">
+                Grand Total
+                <span>LKR {getTotalPrice() + 80 + 342.88}</span>
+              </p>
+              <p className="text-xs text-gray-500">exclusive of VAT</p>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="bg-blue-100 hover:bg-blue-200 text-blue-600 px-3 py-1 rounded text-sm">💳 Add Card</button>
+              <button className="bg-blue-100 hover:bg-blue-200 text-blue-600 px-3 py-1 rounded text-sm">🏷️ Add Coupon</button>
+            </div>
+
+            <button
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition"
               onClick={handleCheckout}
             >
               Proceed to Checkout

@@ -1,5 +1,7 @@
 import React from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import Chatbot from "react-chatbot-kit";
+import "react-chatbot-kit/build/main.css";
 import SHome from "./pages/Home";
 import Login from "./pages/Login";
 import EmailVerify from "./pages/EmailVerify";
@@ -14,8 +16,10 @@ import Product from "./Components/Tharaka/product";
 import Banner from "./Components/Tharaka/Banner";
 import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
-import OrderDetails from "./Components/Tharaka/OrderDetails";
 import Cart from "./Components/Tharaka/Cart";
+
+import Compare from "./Components/Tharaka/Compare";
+
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
 import Dashboard from "./Components/Nalinda/pages/dashboard";
@@ -32,22 +36,23 @@ import Profile from "./pages/Profile/Profile";
 
 import AdminLayout from "./Components/Nalinda/adminlayout";
 import ItemDetails from "./Components/Nalinda/pages/productview";
-
-
-
+import CompareBar from "./Components/Tharaka/CompareBar";
+import config from "./Components/Tharaka/Config";
+import MessageParser from "./Components/Tharaka/MessageParser";
+import ActionProvider from "./Components/Tharaka/ActionProvider";
+import ChatWidget from "./Components/Tharaka/ChatWidget";
 
 
 const App = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Define routes where Navbar should not be displayed
-
-  const hideNavbarRoutes = ["/shome", "/login", "/email-verify", "/reset-password","/admin","/admin/products","/admin/productview/:id","/admin/editproduct/:id",
-    "/admin/dashboard", "/admin/analytics" , "/admin/addproduct"
+  const hideNavbarRoutes = [
+    "/shome", "/login", "/email-verify", "/reset-password", "/admin", "/admin/products",
+    "/admin/productview/:id", "/admin/editproduct/:id", "/admin/dashboard", "/admin/analytics", "/admin/addproduct"
   ];
 
   return (
-
     <ErrorBoundary>
       <div>
         <ToastContainer />
@@ -64,9 +69,11 @@ const App = () => {
           <Route path='/details-section' element={<DetailsSection />} />
 
           <Route path='/profile' element={<Profile />} />
+
           <Route path='/purchase-section' element={<PurchasesSection />} />
           <Route path='/reports-section' element={<ReportsSection />} />
           <Route path='/sidebar' element={<Sidebar />} />
+
 
           <Route path="/shome" element={<SHome />} />
           <Route path="/login" element={<Login />} />
@@ -87,20 +94,21 @@ const App = () => {
           />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/order" element={<Order />} />
-          <Route path="/order-details" element={<OrderDetails />} />
           <Route path="/cart" element={<Cart />} />
-            
-
+          <Route path="/compare" element={<Compare />} />
           <Route path="/admin" element={<AdminLayout />}>
-        <Route path="products" element={<ProductList />} />
-        <Route path="/admin/productview/:id" element={<ItemDetails/>} />
-        <Route path="/admin/editproduct/:id" element={<EditProduct />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="addproduct" element={<AddProductPage />} /> 
-        </Route>
-
+            <Route path="products" element={<ProductList />} />
+            <Route path="/admin/productview/:id" element={<ItemDetails/>} />
+            <Route path="/admin/editproduct/:id" element={<EditProduct />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="addproduct" element={<AddProductPage />} /> 
+          </Route>
         </Routes>
+        <CompareBar onCompare={() => navigate("/compare")} />
+
+        
+        <ChatWidget />
 
       </div>
     </ErrorBoundary>
