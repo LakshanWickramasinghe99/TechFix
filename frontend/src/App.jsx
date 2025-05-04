@@ -17,13 +17,23 @@ import Banner from "./Components/Tharaka/Banner";
 import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
 import Cart from "./Components/Tharaka/Cart";
+
 import Compare from "./Components/Tharaka/Compare";
-import Profile from './pages/Profile';
+
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
 import Dashboard from "./Components/Nalinda/pages/dashboard";
 import Analytics from "./Components/Nalinda/pages/analytics";
 import EditProduct from "./Components/Nalinda/editproduct";
+
+import AddressSection from "./pages/Profile/AddressSection";
+import DeleteAccountSection from "./pages/Profile/DeleteAccountSection";
+import DetailsSection from "./pages/Profile/DetailsSection";
+import PurchasesSection from "./pages/Profile/PurchasesSection";
+import ReportsSection from "./pages/Profile/ReportsSection";
+import Sidebar from "./pages/Profile/Sidebar";
+import Profile from "./pages/Profile/Profile";
+
 import AdminLayout from "./Components/Nalinda/adminlayout";
 import ItemDetails from "./Components/Nalinda/pages/productview";
 import CompareBar from "./Components/Tharaka/CompareBar";
@@ -31,6 +41,7 @@ import config from "./Components/Tharaka/Config";
 import MessageParser from "./Components/Tharaka/MessageParser";
 import ActionProvider from "./Components/Tharaka/ActionProvider";
 import ChatWidget from "./Components/Tharaka/ChatWidget";
+
 
 const App = () => {
   const location = useLocation();
@@ -48,7 +59,22 @@ const App = () => {
         {/* Conditionally render Navbar */}
         {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
         <Routes>
+
+          <Route path='/' element={<Home />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/email-verify' element={<EmailVerify />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/address-section' element={<AddressSection />} />
+          <Route path='/delete-account-section' element={<DeleteAccountSection />} />
+          <Route path='/details-section' element={<DetailsSection />} />
+
           <Route path='/profile' element={<Profile />} />
+
+          <Route path='/purchase-section' element={<PurchasesSection />} />
+          <Route path='/reports-section' element={<ReportsSection />} />
+          <Route path='/sidebar' element={<Sidebar />} />
+
+
           <Route path="/shome" element={<SHome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/email-verify" element={<EmailVerify />} />

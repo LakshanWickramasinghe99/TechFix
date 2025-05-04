@@ -1,10 +1,11 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+// Create context
 export const AppContext = createContext();
 
-export const AppContextProvider = (props) => {
+export const AppContextProvider = ({ children }) => {
     axios.defaults.withCredentials = true;
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -29,10 +30,22 @@ export const AppContextProvider = (props) => {
             if (data.success) {
                 setUserData(data.userData);
             } else {
-                toast.error(data.message);
+                toast.error(data.message || "User data not available");
+                setUserData(null);
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to fetch user data");
+            console.error('User data fetch error:', error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    setIsLoggedin(false);
+                    toast.error("Please login again");
+                } else if (error.response.status === 500) {
+                    toast.error("Server error - please try again later");
+                }
+            } else {
+                toast.error("Network error - can't reach server");
+            }
+            setUserData(null);
         }
     };
 
@@ -49,5 +62,14 @@ export const AppContextProvider = (props) => {
         getUserData,
     };
 
-    return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
+    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
+
+// Custom hook for consuming the context
+export const useAppContext = () => {
+    const context = useContext(AppContext);
+    if (!context) {
+        throw new Error('useAppContext must be used within an AppContextProvider');
+    }
+    return context;
 };

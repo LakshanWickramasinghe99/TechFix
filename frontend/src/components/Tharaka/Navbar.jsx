@@ -83,12 +83,12 @@ const Navbar = () => {
 
   const handleBrandClick = (brandName) => {
     setActiveSection(null);
-    navigate(`/?brand=${encodeURIComponent(brandName)}`);
+    navigate(/?brand=${encodeURIComponent(brandName)});
   };
 
   const handleCategoryClick = (categoryName) => {
     setActiveSection(null);
-    navigate(`/?category=${encodeURIComponent(categoryName)}`);
+    navigate(/?category=${encodeURIComponent(categoryName)});
   };
 
   // ✅ Live cart count from localStorage + event listener
