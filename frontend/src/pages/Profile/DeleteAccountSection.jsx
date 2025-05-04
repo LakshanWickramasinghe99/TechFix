@@ -1,4 +1,4 @@
-/*import React from 'react';
+import React from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -36,4 +36,3 @@ const DeleteAccountSection = ({ setIsDeleteModalOpen }) => {
 };
 
 export default DeleteAccountSection;
-*/

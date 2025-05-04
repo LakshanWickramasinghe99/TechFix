@@ -11,7 +11,6 @@ import { authRouter } from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
 import profileRouter from './routes/profileRoutes.js';
-import ProductRoutes from './routes/ProductRoutes.js';
 
 import connectDB from './config/db.js';
 import itemRoutes from './routes/itemRoutes.js';
@@ -82,7 +81,6 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 
 app.use('/api/profile', profileRouter);
-app.use('/api/products', ProductRoutes);
 // Removed duplicate mounting of profileRouter on '/api/user' to avoid conflicts.
 
 // Health check endpoint
@@ -102,10 +100,4 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-  console.log('Available routes:');
-  console.log('GET    /api/health');
-  console.log('GET    /api/user/data');
-  console.log('GET    /api/profile');
-  console.log('GET    /api/profile/basic');
-  console.log('GET    /api/products');
 });
