@@ -83,15 +83,14 @@ const Navbar = () => {
 
   const handleBrandClick = (brandName) => {
     setActiveSection(null);
-    navigate(/?brand=${encodeURIComponent(brandName)});
+    navigate(`/?brand=${encodeURIComponent(brandName)}`);
   };
 
   const handleCategoryClick = (categoryName) => {
     setActiveSection(null);
-    navigate(/?category=${encodeURIComponent(categoryName)});
+    navigate(`/?category=${encodeURIComponent(categoryName)}`);
   };
 
-  // ✅ Live cart count from localStorage + event listener
   useEffect(() => {
     const updateCart = () => {
       const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -99,9 +98,9 @@ const Navbar = () => {
       setCartCount(totalCount);
     };
 
-    updateCart(); // initial load
-    window.addEventListener("storage", updateCart); // for multi-tab sync
-    window.addEventListener("cartUpdated", updateCart); // custom event from app
+    updateCart();
+    window.addEventListener("storage", updateCart);
+    window.addEventListener("cartUpdated", updateCart);
 
     return () => {
       window.removeEventListener("storage", updateCart);
@@ -109,7 +108,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Close dropdowns if click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -161,7 +159,6 @@ const Navbar = () => {
 
         <div className="flex items-center">
           <Heart size={24} className="text-gray-700 cursor-pointer mr-8" />
-
           <div className="relative mr-64 cursor-pointer" onClick={() => navigate("/cart")}>
             <ShoppingBag size={24} className="text-gray-700" />
             {cartCount > 0 && (
@@ -175,18 +172,13 @@ const Navbar = () => {
         <div className="absolute top-7 right-4 flex items-center space-x-2">
           <User size={24} className="text-gray-600" />
           <span className="text-sm text-gray-500">Welcome</span>
-          <a
-            href="#"
-            className="text-sm font-semibold text-blue-600 hover:underline"
-          >
+          <a href="#" className="text-sm font-semibold text-blue-600 hover:underline">
             Sign In / Register
           </a>
         </div>
       </nav>
 
-      {/* Dropdowns */}
       <div className="flex justify-end p-4 space-x-4 relative mt-24">
-        {/* Categories */}
         <div className="relative" ref={categoriesRef}>
           <button
             onClick={() => handleToggleSection("categories")}
@@ -224,7 +216,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Brands */}
         <div className="relative" ref={brandsRef}>
           <button
             onClick={() => handleToggleSection("brands")}
@@ -262,7 +253,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Deliver To */}
         <div className="relative">
           <button
             onClick={() => handleToggleSection("countries")}
