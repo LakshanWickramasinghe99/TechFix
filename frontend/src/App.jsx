@@ -17,7 +17,7 @@ import Banner from "./Components/Tharaka/Banner";
 import HomePageDown from "./Components/Tharaka/HomePageDown";
 import Order from "./Components/Tharaka/Order";
 import Cart from "./Components/Tharaka/Cart";
-
+import SearchProduct from "./Components/Tharaka/SearchProduct";
 import Compare from "./Components/Tharaka/Compare";
 
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
@@ -79,6 +79,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/email-verify" element={<EmailVerify />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/search" element={<SearchProduct />} />
           <Route
             path="/"
             element={

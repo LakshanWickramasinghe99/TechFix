@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Mic,
@@ -7,7 +7,10 @@ import {
   User,
   Heart,
   ChevronDown,
+  LogOut,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import logo from "../../assets/logo.png";
 
 import mobilesImg from "../../assets/cell-phone.png";
@@ -29,17 +32,17 @@ import oppoImg from "../../assets/oppo.png";
 import oneplus from "../../assets/one-plus.png";
 import xiomi from "../../assets/xiaomi.png";
 
-import { useNavigate } from "react-router-dom";
-
 const Navbar = () => {
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState("Select Country");
   const [cartCount, setCartCount] = useState(0);
+  const [userId, setUserId] = useState(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const navigate = useNavigate();
   const categoriesRef = useRef(null);
   const brandsRef = useRef(null);
+  const profileRef = useRef(null);
 
   const categories = [
     { name: "Mobiles", image: mobilesImg },
@@ -64,19 +67,6 @@ const Navbar = () => {
     { name: "Xiaomi", image: xiomi },
   ];
 
-  const countries = [
-    { name: "Sri Lanka", flag: "https://flagcdn.com/lk.svg" },
-    { name: "Australia", flag: "https://flagcdn.com/au.svg" },
-    { name: "Brazil", flag: "https://flagcdn.com/br.svg" },
-    { name: "Canada", flag: "https://flagcdn.com/ca.svg" },
-    { name: "France", flag: "https://flagcdn.com/fr.svg" },
-    { name: "Germany", flag: "https://flagcdn.com/de.svg" },
-    { name: "India", flag: "https://flagcdn.com/in.svg" },
-    { name: "Japan", flag: "https://flagcdn.com/jp.svg" },
-    { name: "United Kingdom", flag: "https://flagcdn.com/gb.svg" },
-    { name: "United States", flag: "https://flagcdn.com/us.svg" },
-  ];
-
   const handleToggleSection = (section) => {
     setActiveSection((prev) => (prev === section ? null : section));
   };
@@ -89,6 +79,26 @@ const Navbar = () => {
   const handleCategoryClick = (categoryName) => {
     setActiveSection(null);
     navigate(`/?category=${encodeURIComponent(categoryName)}`);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    setUserId(null);
+    setProfileMenuOpen(false);
+    navigate("/");
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (search.trim() !== "") {
+      navigate(`/search?query=${encodeURIComponent(search)}`);
+      setSearch("");
+    }
+  };
+
+  const handleMicClick = () => {
+    // Add your logic to handle mic click here (e.g., for voice search)
+    console.log("Mic clicked");
   };
 
   useEffect(() => {
@@ -109,12 +119,21 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (
         !categoriesRef.current?.contains(e.target) &&
-        !brandsRef.current?.contains(e.target)
+        !brandsRef.current?.contains(e.target) &&
+        !profileRef.current?.contains(e.target)
       ) {
         setActiveSection(null);
+        setProfileMenuOpen(false);
       }
     };
 
@@ -136,30 +155,45 @@ const Navbar = () => {
           />
         </div>
 
-        <div className="relative flex-1 mx-4 max-w-lg">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="relative flex-1 mx-4 max-w-lg"
+        >
           <div className="relative flex items-center w-full">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search"
-              className="w-full p-2 pl-4 pr-12 border-2 border-gray-400 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3674B5] shadow-sm"
+              placeholder="Search products"
+              className="w-full p-2 pl-4 pr-24 border-2 border-gray-400 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3674B5] shadow-sm"
             />
+
             {search && (
               <button
+                type="button"
                 onClick={() => setSearch("")}
-                className="absolute right-12 text-gray-500"
+                className="absolute right-16 text-gray-500"
               >
                 ✖
               </button>
             )}
-            <Mic className="absolute right-4 text-gray-600 cursor-pointer" />
+
+            <button
+              type="button"
+              onClick={handleMicClick}
+              className="absolute right-4 text-gray-600"
+            >
+              <Mic className="cursor-pointer" />
+            </button>
           </div>
-        </div>
+        </form>
 
         <div className="flex items-center">
           <Heart size={24} className="text-gray-700 cursor-pointer mr-8" />
-          <div className="relative mr-64 cursor-pointer" onClick={() => navigate("/cart")}>
+          <div
+            className="relative mr-8 cursor-pointer"
+            onClick={() => navigate("/cart")}
+          >
             <ShoppingBag size={24} className="text-gray-700" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
@@ -167,18 +201,58 @@ const Navbar = () => {
               </span>
             )}
           </div>
-        </div>
 
-        <div className="absolute top-7 right-4 flex items-center space-x-2">
-          <User size={24} className="text-gray-600" />
-          <span className="text-sm text-gray-500">Welcome</span>
-          <a href="#" className="text-sm font-semibold text-blue-600 hover:underline">
-            Sign In / Register
-          </a>
+          <div className="relative" ref={profileRef}>
+            {userId ? (
+              <>
+                <User
+                  size={28}
+                  className="text-gray-600 cursor-pointer"
+                  onClick={() => setProfileMenuOpen((prev) => !prev)}
+                />
+                <AnimatePresence>
+                  {profileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-300 z-50 p-2"
+                    >
+                      <button
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          navigate("/profile");
+                        }}
+                        className="flex items-center gap-2 w-full p-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                      >
+                        <User size={18} /> Profile
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 w-full p-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                      >
+                        <LogOut size={18} /> Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            ) : (
+              <a
+                href="#"
+                className="text-sm font-semibold text-blue-600 hover:underline"
+                onClick={() => navigate("/login")}
+              >
+                Sign In / Register
+              </a>
+            )}
+          </div>
         </div>
       </nav>
 
+      {/* Browse buttons */}
       <div className="flex justify-end p-4 space-x-4 relative mt-24">
+        {/* Categories */}
         <div className="relative" ref={categoriesRef}>
           <button
             onClick={() => handleToggleSection("categories")}
@@ -190,7 +264,6 @@ const Navbar = () => {
           >
             Browse Categories <ChevronDown size={20} />
           </button>
-
           {activeSection === "categories" && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -206,8 +279,12 @@ const Navbar = () => {
                     className="flex items-center justify-between w-full p-3 hover:bg-gray-200 transition rounded-md"
                   >
                     <div className="flex items-center gap-3">
-                      <img src={category.image} alt={category.name} className="w-6 h-6" />
-                      <span className="text-sm font-medium">{category.name}</span>
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="w-8 h-8 object-cover rounded-full"
+                      />
+                      <span>{category.name}</span>
                     </div>
                   </button>
                 ))}
@@ -216,6 +293,7 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* Brands */}
         <div className="relative" ref={brandsRef}>
           <button
             onClick={() => handleToggleSection("brands")}
@@ -225,15 +303,14 @@ const Navbar = () => {
                 : "bg-gray-300 text-black hover:bg-gray-500"
             }`}
           >
-            Brands <ChevronDown size={20} />
+            Browse Brands <ChevronDown size={20} />
           </button>
-
           {activeSection === "brands" && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="z-50 border-2 border-[#3674B5] rounded-lg bg-white shadow-md p-1 absolute right-0 mt-2 w-64"
+              className="z-50 border-2 border-[#3674B5] rounded-lg bg-white shadow-md p-4 absolute left-0 mt-2 w-64"
             >
               <div className="max-h-72 overflow-y-auto">
                 {brands.map((brand, index) => (
@@ -243,8 +320,12 @@ const Navbar = () => {
                     className="flex items-center justify-between w-full p-3 hover:bg-gray-200 transition rounded-md"
                   >
                     <div className="flex items-center gap-3">
-                      <img src={brand.image} alt={brand.name} className="w-6 h-6" />
-                      <span className="text-sm font-medium">{brand.name}</span>
+                      <img
+                        src={brand.image}
+                        alt={brand.name}
+                        className="w-8 h-8 object-cover rounded-full"
+                      />
+                      <span>{brand.name}</span>
                     </div>
                   </button>
                 ))}
@@ -252,57 +333,7 @@ const Navbar = () => {
             </motion.div>
           )}
         </div>
-
-        <div className="relative">
-          <button
-            onClick={() => handleToggleSection("countries")}
-            className={`flex items-center gap-2 px-6 py-2 rounded-full shadow-md transition ${
-              activeSection === "countries"
-                ? "bg-[#3674B5] text-white"
-                : "bg-gray-300 text-black hover:bg-gray-500"
-            }`}
-          >
-            Deliver To <ChevronDown size={20} />
-          </button>
-
-          {activeSection === "countries" && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="z-50 border-2 border-[#3674B5] rounded-lg bg-white shadow-md p-2 absolute right-0 mt-2 w-64"
-            >
-              <div className="max-h-72 overflow-y-auto">
-                {countries
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((country, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSelectedCountry(country.name);
-                        setActiveSection(null);
-                      }}
-                      className="flex items-center gap-3 w-full p-2 hover:bg-gray-200 rounded-md"
-                    >
-                      <img
-                        src={country.flag}
-                        alt={country.name}
-                        className="w-6 h-4 object-cover rounded-sm"
-                      />
-                      <span className="text-sm font-medium">{country.name}</span>
-                    </button>
-                  ))}
-              </div>
-            </motion.div>
-          )}
-        </div>
       </div>
-
-      {selectedCountry !== "Select Country" && (
-        <div className="text-center mt-2 text-sm text-gray-700">
-          Delivering to: <strong>{selectedCountry}</strong>
-        </div>
-      )}
     </div>
   );
 };
