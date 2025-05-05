@@ -14,7 +14,6 @@ const ChatWidget = () => {
 
   return (
     <div>
-      {/* Basic Emoji Chat Icon */}
       <button
         onClick={toggleChat}
         style={{
@@ -42,7 +41,7 @@ const ChatWidget = () => {
       position: "fixed",
       bottom: "90px",
       right: "20px",
-      width: "350px", // ✅ Set proper width
+      width: "350px",
       maxHeight: "500px",
       boxShadow: "0 0 15px rgba(0,0,0,0.3)",
       borderRadius: "8px",

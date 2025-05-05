@@ -6,7 +6,6 @@ class MessageParser {
   parse(message) {
     const lowercase = message.toLowerCase();
 
-    // Products
     if (
       lowercase.includes("what do you sell") ||
       lowercase.includes("products") ||
@@ -17,7 +16,6 @@ class MessageParser {
       this.actionProvider.handleSiteInfo();
     }
 
-    // Shipping
     else if (
       lowercase.includes("delivery") ||
       lowercase.includes("shipping") ||
@@ -27,7 +25,6 @@ class MessageParser {
       this.actionProvider.handleShippingInfo();
     }
 
-    // Payment
     else if (
       lowercase.includes("payment") ||
       lowercase.includes("pay") ||
@@ -37,7 +34,6 @@ class MessageParser {
       this.actionProvider.handlePaymentInfo();
     }
 
-    // Account / Orders
     else if (
       lowercase.includes("account") ||
       lowercase.includes("sign up") ||
@@ -48,7 +44,7 @@ class MessageParser {
       this.actionProvider.handleOrderInfo();
     }
 
-    // Contact / Support
+  
     else if (
       lowercase.includes("contact") ||
       lowercase.includes("support") ||
@@ -58,7 +54,6 @@ class MessageParser {
       this.actionProvider.handleSupportInfo();
     }
 
-    // Cart / Checkout
     else if (
       lowercase.includes("cart") ||
       lowercase.includes("checkout") ||
@@ -67,7 +62,6 @@ class MessageParser {
       this.actionProvider.handleCartInfo();
     }
 
-    // Returns / Refunds
     else if (
       lowercase.includes("return") ||
       lowercase.includes("refund") ||

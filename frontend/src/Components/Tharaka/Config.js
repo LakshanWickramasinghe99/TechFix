@@ -1,5 +1,5 @@
 import { createChatBotMessage } from "react-chatbot-kit";
-import CustomMessage from "./CustomMessage"; // adjust path as needed
+import CustomMessage from "./CustomMessage";
 
 const config = {
   botName: "SiteBot",
