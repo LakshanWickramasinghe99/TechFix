@@ -17,6 +17,8 @@ import itemRoutes from './routes/itemRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import bodyParser from 'body-parser';
+import adminRoutes from './routes/adminRoutes.js';
+
 
 
 dotenv.config();
@@ -62,6 +64,8 @@ app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 // API Routes
 // app.use("/api/products", ProductRoutes);
 app.use('/api', itemRoutes);
+app.use('/api/admin', adminRoutes);
+
 
 
 // Database Connection (simplified)

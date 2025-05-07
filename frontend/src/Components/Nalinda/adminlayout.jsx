@@ -1,5 +1,5 @@
 import Sidebar from "./sidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Bell, User, Search } from "lucide-react";
 import { useState } from "react";
 
@@ -7,24 +7,27 @@ const AdminLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const location = useLocation();
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Mobile sidebar overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
       )}
-      
-      {/* Sidebar - hidden on mobile, shown with button click */}
+
+      {/* Sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-30 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <Sidebar />
       </div>
-      
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
@@ -39,7 +42,7 @@ const AdminLayout = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            
+
             {/* Search Bar */}
             <div className="relative flex-1 max-w-md mx-4">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -53,18 +56,16 @@ const AdminLayout = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
+
             {/* Header Right */}
             <div className="flex items-center space-x-4">
-              {/* Notifications */}
               <button className="text-gray-500 hover:text-gray-700 relative">
                 <Bell className="h-6 w-6" />
                 <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   3
                 </span>
               </button>
-              
-              {/* User Menu */}
+
               <div className="relative">
                 <button className="flex items-center text-gray-700 hover:text-gray-900">
                   <span className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium mr-2">
@@ -79,29 +80,37 @@ const AdminLayout = () => {
             </div>
           </div>
         </header>
-        
-        {/* Breadcrumb */}
+
+        {/* Dynamic Breadcrumb */}
         <div className="bg-white border-b border-gray-200 px-6 py-3">
           <nav className="flex" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-2">
               <li>
-                <a href="#" className="text-gray-500 hover:text-gray-700">Admin</a>
+                <a href="/admin" className="text-gray-500 hover:text-gray-700">Admin</a>
               </li>
-              <li className="flex items-center">
-                <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                <a href="#" className="ml-2 text-gray-500 hover:text-gray-700">Dashboard</a>
-              </li>
+              {pathSegments.slice(1).map((segment, index) => {
+                const url = '/' + pathSegments.slice(0, index + 2).join('/');
+                const label = decodeURIComponent(segment)
+                  .replace(/-/g, ' ')
+                  .replace(/\b\w/g, l => l.toUpperCase());
+                return (
+                  <li className="flex items-center" key={index}>
+                    <svg className="h-4 w-4 text-gray-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <a href={url} className="text-gray-500 hover:text-gray-700 capitalize">{label}</a>
+                  </li>
+                );
+              })}
             </ol>
           </nav>
         </div>
-        
-        {/* Main Content Area */}
+
+        {/* Main Page Content */}
         <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
           <Outlet />
         </main>
-        
+
         {/* Footer */}
         <footer className="bg-white border-t border-gray-200 p-4">
           <div className="text-center text-sm text-gray-500">

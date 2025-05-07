@@ -25,6 +25,7 @@ import ProductList from "./Components/Nalinda/pages/productlist";
 import Dashboard from "./Components/Nalinda/pages/dashboard";
 import Analytics from "./Components/Nalinda/pages/analytics";
 import EditProduct from "./Components/Nalinda/editproduct";
+import AdminUserList from "./Components/Nalinda/pages/adminUserList";
 
 import AddressSection from "./pages/Profile/AddressSection";
 import DeleteAccountSection from "./pages/Profile/DeleteAccountSection";
@@ -49,7 +50,8 @@ const App = () => {
 
   const hideNavbarRoutes = [
     "/shome", "/login", "/email-verify", "/reset-password", "/admin", "/admin/products",
-    "/admin/productview/:id", "/admin/editproduct/:id", "/admin/dashboard", "/admin/analytics", "/admin/addproduct"
+    "/admin/productview/:id", "/admin/editproduct/:id", "/admin/dashboard", "/admin/analytics", "/admin/addproduct" , "/admin/adminviewusers" 
+    
   ];
 
   return (
@@ -104,6 +106,7 @@ const App = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="addproduct" element={<AddProductPage />} /> 
+            <Route path="/admin/adminviewusers" element={<AdminUserList />} />
           </Route>
         </Routes>
         <CompareBar onCompare={() => navigate("/compare")} />
