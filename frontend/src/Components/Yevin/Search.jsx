@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import nlp from "compromise";
+import axios from "axios"; // Add axios import
 
 function Search() {
   const navigate = useNavigate();
@@ -11,6 +12,15 @@ function Search() {
     value: null,
   });
   const [isListening, setIsListening] = useState(false);
+  const [userId, setUserId] = useState(null); // Add userId state
+
+  // Get userId from localStorage on component mount
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -18,9 +28,34 @@ function Search() {
     setPriceFilter({ active: false, operator: null, value: null });
   };
 
+  // Function to save search history to database
+  const saveSearchHistory = async (searchData) => {
+    try {
+      if (!userId) return; // Only save if user is logged in
+
+      await axios.post("http://localhost:5000/api/search-history", {
+        userId,
+        searchTerm: searchData.term || "",
+        priceOperator: searchData.operator || null,
+        priceValue: searchData.value || null,
+      });
+
+      console.log("Search history saved");
+    } catch (error) {
+      console.error("Error saving search history:", error);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
+      const searchData = { term: searchTerm.trim() };
+
+      // Save search history if user is logged in
+      if (userId) {
+        saveSearchHistory(searchData);
+      }
+
       navigateToSearchResults();
     }
   };
@@ -43,7 +78,6 @@ function Search() {
     }
 
     // Navigate to search results page with query params
-    // Make sure this points to the correct route for SearchProduct.jsx
     navigate(`/search?${params.toString()}`);
   };
 
@@ -84,7 +118,18 @@ function Search() {
         const price = parseFloat(priceMatch[0]);
         const productName = product || "products"; // Default to "products" if no product name found
 
-        // Navigate directly instead of using state
+        const searchData = {
+          term: productName,
+          operator: ">",
+          value: price,
+        };
+
+        // Save search history if user is logged in
+        if (userId) {
+          saveSearchHistory(searchData);
+        }
+
+        // Navigate directly
         const params = new URLSearchParams();
         params.append("term", productName);
         params.append("operator", ">");
@@ -109,15 +154,26 @@ function Search() {
         const price = parseFloat(priceMatch[0]);
         const productName = product || "products"; // Default to "products" if no product name found
 
-        // Navigate directly instead of using state
+        const searchData = {
+          term: productName,
+          operator: "<",
+          value: price,
+        };
+
+        // Save search history if user is logged in
+        if (userId) {
+          saveSearchHistory(searchData);
+        }
+
+        // Navigate directly
         const params = new URLSearchParams();
         params.append("term", productName);
-        params.append("operator", "<"); // Fixed: This should be < for "less than"
+        params.append("operator", "<");
         params.append("value", price);
         navigate(`/search?${params.toString()}`);
         return true;
       }
-    } // Added missing closing brace here
+    }
 
     // Equal to patterns
     if (
@@ -139,29 +195,49 @@ function Search() {
 
       if (priceMatch) {
         const price = parseFloat(priceMatch[0]);
-        const productName = product || "products"; // Default to "products" if no product name found
+        const productName = product || "products";
 
-        // Navigate directly instead of using state
+        const searchData = {
+          term: productName,
+          operator: "=",
+          value: price,
+        };
+
+        // Save search history if user is logged in
+        if (userId) {
+          saveSearchHistory(searchData);
+        }
+
+        // Navigate directly
         const params = new URLSearchParams();
         params.append("term", productName);
-        params.append("operator", "="); // Fixed: This should be = for "equal to"
+        params.append("operator", "=");
         params.append("value", price);
         navigate(`/search?${params.toString()}`);
         return true;
       }
-    } // Added missing closing brace here
+    }
 
     // For simple searches
     const keywords = doc.nouns().out("array");
     const searchQuery = keywords.length > 0 ? keywords.join(" ") : text.trim();
 
     if (searchQuery) {
+      const searchData = {
+        term: searchQuery,
+      };
+
+      // Save search history if user is logged in
+      if (userId) {
+        saveSearchHistory(searchData);
+      }
+
       const params = new URLSearchParams();
       params.append("term", searchQuery);
       navigate(`/search?${params.toString()}`);
     }
     return false;
-  }; // Added missing semicolon here
+  };
 
   const startListening = () => {
     if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
