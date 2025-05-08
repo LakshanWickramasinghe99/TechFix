@@ -137,6 +137,13 @@ const Home = () => {
           ))}
         </div>
       )}
+
+      <div>
+        <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-5">Recommendations</h2>
+        <div className="flex flex-wrap justify-center gap-4">
+          
+        </div>
+      </div>
     </div>
   );
 };

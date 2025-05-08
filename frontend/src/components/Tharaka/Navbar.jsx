@@ -32,8 +32,10 @@ import oppoImg from "../../assets/oppo.png";
 import oneplus from "../../assets/one-plus.png";
 import xiomi from "../../assets/xiaomi.png";
 
+import SearchBar from "../Yevin/Search";
+
 const Navbar = () => {
-  const [search, setSearch] = useState("");
+  
   const [activeSection, setActiveSection] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [userId, setUserId] = useState(null);
@@ -88,18 +90,9 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (search.trim() !== "") {
-      navigate(`/search?query=${encodeURIComponent(search)}`);
-      setSearch("");
-    }
-  };
+ 
 
-  const handleMicClick = () => {
-    // Add your logic to handle mic click here (e.g., for voice search)
-    console.log("Mic clicked");
-  };
+  
 
   useEffect(() => {
     const updateCart = () => {
@@ -155,38 +148,10 @@ const Navbar = () => {
           />
         </div>
 
-        <form
-          onSubmit={handleSearchSubmit}
-          className="relative flex-1 mx-4 max-w-lg"
-        >
-          <div className="relative flex items-center w-full">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products"
-              className="w-full p-2 pl-4 pr-24 border-2 border-gray-400 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3674B5] shadow-sm"
-            />
-
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                className="absolute right-16 text-gray-500"
-              >
-                ✖
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={handleMicClick}
-              className="absolute right-4 text-gray-600"
-            >
-              <Mic className="cursor-pointer" />
-            </button>
-          </div>
-        </form>
+        <div className="relative flex-1 mx-4 max-w-lg">
+          <SearchBar />
+        </div>
+        
 
         <div className="flex items-center">
           <Heart size={24} className="text-gray-700 cursor-pointer mr-8" />
