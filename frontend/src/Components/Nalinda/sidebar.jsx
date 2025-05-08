@@ -31,10 +31,7 @@ const Sidebar = () => {
               <BarChart className="w-5 h-5 mr-3 text-green-400 group-hover:text-green-300" /> 
               <span className="font-medium">Analytics</span>
             </Link>
-            <Link to="/admin/dashboard" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
-              <LayoutDashboard className="w-5 h-5 mr-3 text-blue-400 group-hover:text-blue-300" /> 
-              <span className="font-medium">Dashboard</span>
-            </Link>
+            
           </div>
         </div>
 

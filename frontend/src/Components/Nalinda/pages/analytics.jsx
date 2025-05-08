@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { 
-  TrendingUp, 
+  DollarSign, 
+  Users, 
   ShoppingBag, 
+  TrendingUp, 
+  ArrowUpRight, 
+  ArrowDownRight,
   AlertTriangle,
   BarChart3,
   Download
@@ -9,6 +13,14 @@ import {
 
 const Analytics = () => {
   const [activeRange, setActiveRange] = useState("30d");
+
+  // Dashboard stats
+  const stats = [
+    { id: 1, title: "Total Revenue", value: "$24,532", change: "+12.5%", trend: "up", icon: DollarSign, color: "blue" },
+    { id: 2, title: "New Customers", value: "1,234", change: "+18.2%", trend: "up", icon: Users, color: "green" },
+    { id: 3, title: "Total Orders", value: "2,345", change: "+7.1%", trend: "up", icon: ShoppingBag, color: "purple" },
+    { id: 4, title: "Conversion Rate", value: "3.2%", change: "-0.8%", trend: "down", icon: TrendingUp, color: "yellow" },
+  ];
 
   // Top selling products data
   const topProducts = [
@@ -34,7 +46,7 @@ const Analytics = () => {
     document.body.innerHTML = `
       <html>
         <head>
-          <title>Inventory Analytics Report</title>
+          <title>Analytics Report</title>
           <style>
             body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; }
             table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
@@ -50,10 +62,38 @@ const Analytics = () => {
               background-color: #f9f9f9; 
               margin-top: 20px;
             }
+            .stats-grid {
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 20px;
+              margin-bottom: 20px;
+            }
+            .stat-card {
+              border: 1px solid #ddd;
+              padding: 15px;
+              border-radius: 8px;
+            }
+            .stat-title {
+              font-size: 14px;
+              color: #666;
+              margin-bottom: 5px;
+            }
+            .stat-value {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .stat-change {
+              font-size: 14px;
+              color: green;
+            }
+            .stat-change.negative {
+              color: red;
+            }
           </style>
         </head>
         <body>
-          <h1>Inventory Analytics Report</h1>
+          <h1>Analytics Report</h1>
           <p>Generated on: ${new Date().toLocaleDateString()}</p>
           ${printContents}
         </body>
@@ -74,8 +114,8 @@ const Analytics = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-6 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Inventory Analytics</h1>
-          <p className="text-gray-600">Detailed inventory insights and product performance</p>
+          <h1 className="text-2xl font-bold text-gray-800">Analytics Dashboard</h1>
+          <p className="text-gray-600">Business performance and inventory insights</p>
         </div>
         <button 
           onClick={exportToPDF}
@@ -87,6 +127,33 @@ const Analytics = () => {
       </div>
 
       <div id="printable-content">
+        {/* Stats Cards from Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat) => (
+            <div key={stat.id} className="bg-white rounded-lg shadow p-6 transition-all hover:shadow-md">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">{stat.title}</p>
+                  <p className="text-2xl font-bold mt-1 text-gray-800">{stat.value}</p>
+                </div>
+                <div className={`bg-${stat.color}-100 p-3 rounded-lg`}>
+                  <stat.icon className={`w-6 h-6 text-${stat.color}-500`} />
+                </div>
+              </div>
+              <div className="flex items-center mt-4">
+                {stat.trend === "up" ? (
+                  <ArrowUpRight className="w-4 h-4 text-green-500 mr-1" />
+                ) : (
+                  <ArrowDownRight className="w-4 h-4 text-red-500 mr-1" />
+                )}
+                <span className={`text-sm font-medium ${stat.trend === "up" ? "text-green-500" : "text-red-500"}`}>
+                  {stat.change} since last week
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Top Selling Products */}
         <div className="bg-white rounded-lg shadow mb-8">
           <div className="p-6 border-b border-gray-100">
@@ -128,7 +195,7 @@ const Analytics = () => {
           </div>
         </div>
 
-        {/* Low Stock Alerts - Kept in UI but not in PDF */}
+        {/* Low Stock Alerts */}
         <div className="bg-white rounded-lg shadow mb-8">
           <div className="p-6 border-b border-gray-100 flex items-center">
             <AlertTriangle className="w-6 h-6 text-yellow-500 mr-2" />
@@ -160,9 +227,10 @@ const Analytics = () => {
           <div className="p-6 border-b border-gray-100">
             <h2 className="text-lg font-bold text-gray-800">Sales Overview</h2>
           </div>
-          <div className="chart-placeholder">
-            <p className="text-gray-600">Sales Chart Placeholder</p>
-            <p className="text-sm text-gray-500">Actual chart data would be displayed here in a full implementation</p>
+          <div className="p-6 flex justify-center">
+            <div className="w-full h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+              <p className="text-gray-500">Sales Chart Placeholder</p>
+            </div>
           </div>
         </div>
       </div>

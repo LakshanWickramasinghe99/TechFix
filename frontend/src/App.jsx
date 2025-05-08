@@ -22,7 +22,6 @@ import Compare from "./Components/Tharaka/Compare";
 
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
-import Dashboard from "./Components/Nalinda/pages/dashboard";
 import Analytics from "./Components/Nalinda/pages/analytics";
 import EditProduct from "./Components/Nalinda/editproduct";
 import AdminUserList from "./Components/Nalinda/pages/adminUserList";
@@ -34,6 +33,7 @@ import PurchasesSection from "./pages/Profile/PurchasesSection";
 import ReportsSection from "./pages/Profile/ReportsSection";
 import Sidebar from "./pages/Profile/Sidebar";
 import Profile from "./pages/Profile/Profile";
+import AdminOrderPanel from './Components/Nalinda/pages/adminOrderPanel';
 
 import AdminLayout from "./Components/Nalinda/adminlayout";
 import ItemDetails from "./Components/Nalinda/pages/productview";
@@ -43,17 +43,17 @@ import MessageParser from "./Components/Tharaka/MessageParser";
 import ActionProvider from "./Components/Tharaka/ActionProvider";
 import ChatWidget from "./Components/Tharaka/ChatWidget";
 
-
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const hideNavbarRoutes = [
-    "/shome", "/login", "/email-verify", "/reset-password", "/admin", "/admin/products",
-    "/admin/productview/:id", "/admin/editproduct/:id", "/admin/dashboard", "/admin/analytics", "/admin/addproduct" , "/admin/adminviewusers" 
+    "/shome", "/login", "/email-verify", "/reset-password", "/admin", "/admin/products", 
+    "/admin/productview/:id", "/admin/editproduct/:id",  "/admin/analytics", "/admin/addproduct" ,"/admin/orders", "/admin/adminviewusers" 
     
   ];
 
+  
   return (
     <ErrorBoundary>
       <div>
@@ -103,10 +103,10 @@ const App = () => {
             <Route path="products" element={<ProductList />} />
             <Route path="/admin/productview/:id" element={<ItemDetails/>} />
             <Route path="/admin/editproduct/:id" element={<EditProduct />} />
-            <Route path="dashboard" element={<Dashboard />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="addproduct" element={<AddProductPage />} /> 
             <Route path="/admin/adminviewusers" element={<AdminUserList />} />
+            <Route path="/admin/orders" element={<AdminOrderPanel />} />
           </Route>
         </Routes>
         <CompareBar onCompare={() => navigate("/compare")} />
