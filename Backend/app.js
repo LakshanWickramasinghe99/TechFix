@@ -18,6 +18,12 @@ import orderRoutes from './routes/orderRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import bodyParser from 'body-parser';
 import adminRoutes from './routes/adminRoutes.js';
+import adminorderRoutes from './routes/adminorderRoutes.js';
+
+
+
+
+
 
 
 
@@ -65,6 +71,7 @@ app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 // app.use("/api/products", ProductRoutes);
 app.use('/api', itemRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/orders', adminorderRoutes);
 
 
 
