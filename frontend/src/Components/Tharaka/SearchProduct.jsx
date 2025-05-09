@@ -168,7 +168,7 @@ function SearchResults() {
               >
                 {product.image && (
                   <img
-                    src={`http://localhost:5000/${product.image}`}
+                    src={`http://localhost:5000${product.image}`}
                     alt={product.title}
                     className="w-full h-48 object-cover rounded-lg mb-3"
                   />
