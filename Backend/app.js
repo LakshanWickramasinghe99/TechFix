@@ -7,6 +7,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Routes
+
+import analyticsRoutes from './routes/analytics.Routes.js';
+
+
+
+
+
+
+
 import { authRouter } from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import profileRouter from "./routes/profileRoutes.js";
@@ -18,6 +27,7 @@ import bodyParser from "body-parser";
 import adminRoutes from "./routes/adminRoutes.js";
 import adminorderRoutes from "./routes/adminorderRoutes.js";
 import searchHistoryRoutes from "./routes/searchHistoryRoutes.js";
+
 
 dotenv.config();
 // MongoDB connection
@@ -54,10 +64,15 @@ app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 
 // API Routes
 // app.use("/api/products", ProductRoutes);
+
+app.use('/api/admin/analytics', analyticsRoutes);
+
+
 app.use("/api", itemRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/orders", adminorderRoutes);
 app.use("/api/search-history", searchHistoryRoutes);
+
 
 // Database Connection (simplified)
 

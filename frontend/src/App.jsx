@@ -22,7 +22,6 @@ import Compare from "./Components/Tharaka/Compare";
 
 import AddProductPage from "./Components/Nalinda/pages/addproductpage";
 import ProductList from "./Components/Nalinda/pages/productlist";
-import Analytics from "./Components/Nalinda/pages/analytics";
 import EditProduct from "./Components/Nalinda/editproduct";
 import AdminUserList from "./Components/Nalinda/pages/adminUserList";
 
@@ -34,6 +33,7 @@ import ReportsSection from "./pages/Profile/ReportsSection";
 import Sidebar from "./pages/Profile/Sidebar";
 import Profile from "./pages/Profile/Profile";
 import AdminOrderPanel from './Components/Nalinda/pages/adminOrderPanel';
+import AdminAnalytics from './Components/Nalinda/pages/AdminAnalytics';
 
 import AdminLayout from "./Components/Nalinda/adminlayout";
 import ItemDetails from "./Components/Nalinda/pages/productview";
@@ -103,7 +103,7 @@ const App = () => {
             <Route path="products" element={<ProductList />} />
             <Route path="/admin/productview/:id" element={<ItemDetails/>} />
             <Route path="/admin/editproduct/:id" element={<EditProduct />} />
-            <Route path="analytics" element={<Analytics />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="addproduct" element={<AddProductPage />} /> 
             <Route path="/admin/adminviewusers" element={<AdminUserList />} />
             <Route path="/admin/orders" element={<AdminOrderPanel />} />

@@ -18,7 +18,9 @@
     "compromise": "^14.14.4",
     "countries-list": "^3.1.1",
     "framer-motion": "^12.6.2",
+    "html2canvas": "^1.4.1",
     "i18next": "^24.2.3",
+    "jspdf": "^3.0.1",
     "lucide-react": "^0.483.0",
     "react": "^19.0.0",
     "react-chatbot-kit": "^2.2.2",
@@ -32,6 +34,7 @@
     "react-share": "^5.2.2",
     "react-slick": "^0.30.3",
     "react-toastify": "^11.0.5",
+    "recharts": "^2.15.3",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
