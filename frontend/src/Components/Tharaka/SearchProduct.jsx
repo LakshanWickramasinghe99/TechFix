@@ -36,8 +36,8 @@ function SearchResults() {
         const filtered = allProducts.filter((product) => {
           // Text search filter
           const matchesText = searchTerm
-            ? (product.name
-                ? product.name.toLowerCase().includes(searchTerm.toLowerCase())
+            ? (product.title
+                ? product.title.toLowerCase().includes(searchTerm.toLowerCase())
                 : false) ||
               (product.description
                 ? product.description
@@ -86,6 +86,10 @@ function SearchResults() {
 
   const handleBackToProducts = () => {
     navigate("/"); // Change to match your actual route
+  };
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
   };
 
   return (
@@ -164,7 +168,8 @@ function SearchResults() {
             {products.map((product) => (
               <div
                 key={product._id}
-                className="border border-gray-300 p-4 rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow"
+                onClick={() => handleProductClick(product._id)}
+                className="border border-gray-300 p-4 rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow cursor-pointer transform hover:scale-105 transition-transform duration-200"
               >
                 {product.image && (
                   <img
@@ -181,13 +186,19 @@ function SearchResults() {
                   {product.category}
                 </p>
                 <p className="text-gray-600 mb-1">
+                  <span className="font-semibold">Brand:</span> {product.brand}
+                </p>
+                <p className="text-gray-600 mb-1">
                   <span className="font-semibold">Price:</span> ${product.price}
                 </p>
-                
-                <p className="text-gray-600">
+
+                <p className="text-gray-600 line-clamp-2">
                   <span className="font-semibold">Description:</span>{" "}
                   {product.description}
                 </p>
+                <button className="mt-3 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors">
+                  View Details
+                </button>
               </div>
             ))}
           </div>

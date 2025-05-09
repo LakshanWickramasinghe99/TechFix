@@ -13,6 +13,7 @@ export const saveSearchHistory = async (req, res) => {
       });
     }
 
+    // Create new search history entry
     const newSearchHistory = new SearchHistory({
       userId,
       searchTerm,
@@ -21,6 +22,25 @@ export const saveSearchHistory = async (req, res) => {
     });
 
     await newSearchHistory.save();
+
+    // After saving, check if user has more than 10 searches and delete the oldest ones
+    const allUserSearches = await SearchHistory.find({ userId })
+      .sort({ timestamp: -1 }) // Sort by timestamp descending (newest first)
+      .exec();
+
+    if (allUserSearches.length > 10) {
+      // Get IDs of searches to delete (all except the newest 10)
+      const searchesToDelete = allUserSearches
+        .slice(10)
+        .map((search) => search._id);
+
+      // Delete older searches
+      await SearchHistory.deleteMany({ _id: { $in: searchesToDelete } });
+
+      console.log(
+        `Deleted ${searchesToDelete.length} older searches for user ${userId}`
+      );
+    }
 
     res.status(201).json({
       success: true,
