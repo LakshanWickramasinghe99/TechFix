@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Brand images (Ensure these paths are correct)
-import appleImg from '../../assets/apple.png';
-import samsungImg from '../../assets/samsung.png';
-import sonyImg from '../../assets/sony.png';
-import hpImg from '../../assets/hp.png';
-import lenovoImg from '../../assets/lenovo.png';
-import huaweiImg from '../../assets/huawei.png';
-import oppoImg from '../../assets/oppo.png';
-import oneplusImg from '../../assets/one-plus.png';
-import xiaomiImg from '../../assets/xiaomi.png';
+import appleImg from "../../assets/apple.png";
+import samsungImg from "../../assets/samsung.png";
+import sonyImg from "../../assets/sony.png";
+import hpImg from "../../assets/hp.png";
+import lenovoImg from "../../assets/lenovo.png";
+import huaweiImg from "../../assets/huawei.png";
+import oppoImg from "../../assets/oppo.png";
+import oneplusImg from "../../assets/one-plus.png";
+import xiaomiImg from "../../assets/xiaomi.png";
 
 const brandImages = {
   apple: appleImg,
@@ -28,6 +28,7 @@ const brandImages = {
 const Home = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -37,14 +38,16 @@ const Home = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/items');
+        const res = await axios.get("http://localhost:5000/api/items");
         const filtered = selectedBrand
-          ? res.data.filter((item) => item.brand.toLowerCase() === selectedBrand.toLowerCase())
+          ? res.data.filter(
+              (item) => item.brand.toLowerCase() === selectedBrand.toLowerCase()
+            )
           : res.data;
         setItems(filtered);
-        console.log('Home: Fetched items:', filtered);
+        console.log("Home: Fetched items:", filtered);
       } catch (err) {
-        console.error('Home: Failed to fetch items:', err);
+        console.error("Home: Failed to fetch items:", err);
       } finally {
         setLoading(false);
       }
@@ -53,13 +56,34 @@ const Home = () => {
     fetchItems();
   }, [selectedBrand]);
 
-  const brandImage = selectedBrand ? brandImages[selectedBrand.toLowerCase()] : null;
+  // Fetch recommendations
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/search-history/recommendations/${userId}`
+        );
+        setRecommendations(res.data.recommendations || []);
+      } catch (err) {
+        console.error("Home: Failed to fetch recommendations:", err);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
+
+  const brandImage = selectedBrand
+    ? brandImages[selectedBrand.toLowerCase()]
+    : null;
 
   const getDescriptionAsBadges = (description) => {
     return description
       ? description
-          .split('\n')
-          .filter((line) => line.trim() !== '')
+          .split("\n")
+          .filter((line) => line.trim() !== "")
           .map((line, index) => (
             <span
               key={index}
@@ -72,9 +96,9 @@ const Home = () => {
   };
 
   const handleProductClick = (item) => {
-    console.log('Home: Product clicked - ID:', item._id);
+    console.log("Home: Product clicked - ID:", item._id);
     navigate(`/product/${item._id}`);
-    console.log('Home: Navigation triggered to /product/' + item._id);
+    console.log("Home: Navigation triggered to /product/" + item._id);
   };
 
   return (
@@ -87,7 +111,7 @@ const Home = () => {
             className="w-10 h-10 object-contain"
           />
         )}
-        {selectedBrand ? `${selectedBrand} Products` : '🛍️ All Products'}
+        {selectedBrand ? `${selectedBrand} Products` : "🛍️ All Products"}
       </h1>
 
       {loading ? (
@@ -116,10 +140,18 @@ const Home = () => {
                 <h2 className="text-lg font-semibold text-gray-800 mb-1 truncate">
                   {item.title}
                 </h2>
-                <p className="text-xs text-gray-500 mb-2">Brand: {item.brand}</p>
+                <p className="text-xs text-gray-500 mb-2">
+                  Brand: {item.brand}
+                </p>
 
                 <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-base font-bold ${item.salePrice ? 'text-gray-400 line-through' : 'text-blue-700'}`}>
+                  <span
+                    className={`text-base font-bold ${
+                      item.salePrice
+                        ? "text-gray-400 line-through"
+                        : "text-blue-700"
+                    }`}
+                  >
                     ${item.price.toLocaleString()}
                   </span>
                   {item.salePrice && (
@@ -137,6 +169,46 @@ const Home = () => {
           ))}
         </div>
       )}
+
+      <div>
+        <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-5">
+          Recommend for you
+        </h2>
+        <div className="flex flex-wrap justify-center gap-4">
+          {recommendations.length === 0 ? (
+            <p className="text-gray-600">No recommendations available.</p>
+          ) : (
+            recommendations.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => handleProductClick(item)}
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 cursor-pointer group overflow-hidden"
+              >
+                <div className="w-full h-48 bg-white overflow-hidden">
+                  <img
+                    src={`http://localhost:5000${item.image}`}
+                    alt={item.title}
+                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-5">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-1 truncate">
+                    {item.title}
+                  </h2>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Brand: {item.brand}
+                  </p>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-base font-bold text-blue-700">
+                      ${item.price.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };
