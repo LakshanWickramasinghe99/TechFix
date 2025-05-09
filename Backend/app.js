@@ -19,7 +19,7 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import bodyParser from 'body-parser';
 import adminRoutes from './routes/adminRoutes.js';
 import adminorderRoutes from './routes/adminorderRoutes.js';
-
+import analyticsRoutes from './routes/analytics.Routes.js';
 
 
 
@@ -72,7 +72,7 @@ app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 app.use('/api', itemRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/orders', adminorderRoutes);
-
+app.use('/api/admin/analytics', analyticsRoutes);
 
 
 // Database Connection (simplified)
