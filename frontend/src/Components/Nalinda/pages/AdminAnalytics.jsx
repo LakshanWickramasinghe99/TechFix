@@ -10,7 +10,8 @@ import {
   FileText, 
   Settings,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  FilePlus
 } from 'lucide-react';
 
 // Custom hook for API data fetching with loading and error states
@@ -185,87 +186,150 @@ const ProductTable = ({ products, title }) => {
   );
 };
 
-// PDF Settings Modal Component
+// Improved PDF Settings Modal Component
 const PdfSettingsModal = ({ isOpen, onClose, onExport }) => {
   const [pageSize, setPageSize] = useState('a4');
   const [orientation, setOrientation] = useState('portrait');
   const [quality, setQuality] = useState('high');
   const [includeHeader, setIncludeHeader] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   
   if (!isOpen) return null;
   
+  const handleExport = () => {
+    setIsGenerating(true);
+    // We use setTimeout to allow the UI to update before starting the potentially heavy operation
+    setTimeout(() => {
+      onExport({ pageSize, orientation, quality, includeHeader })
+        .finally(() => setIsGenerating(false));
+    }, 100);
+  };
+  
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-        <div className="flex items-center mb-4">
-          <FileText size={20} className="text-gray-600 mr-2" />
-          <h2 className="text-xl font-semibold text-gray-800">PDF Export Settings</h2>
+        <div className="flex items-center justify-between mb-6 border-b border-gray-200 pb-3">
+          <div className="flex items-center">
+            <FilePlus size={22} className="text-blue-600 mr-3" />
+            <h2 className="text-xl font-semibold text-gray-800">Export Report to PDF</h2>
+          </div>
+          <button 
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+            aria-label="Close modal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Page Size</label>
-            <select 
-              value={pageSize} 
-              onChange={(e) => setPageSize(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-gray-500 focus:border-gray-500"
-            >
-              <option value="a4">A4</option>
-              <option value="letter">Letter</option>
-              <option value="legal">Legal</option>
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Page Size</label>
+            <div className="flex gap-3">
+              <button
+                className={`flex-1 py-2 rounded-md border ${pageSize === 'a4' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setPageSize('a4')}
+              >
+                A4
+              </button>
+              <button
+                className={`flex-1 py-2 rounded-md border ${pageSize === 'letter' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setPageSize('letter')}
+              >
+                Letter
+              </button>
+              <button
+                className={`flex-1 py-2 rounded-md border ${pageSize === 'legal' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setPageSize('legal')}
+              >
+                Legal
+              </button>
+            </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Orientation</label>
-            <select 
-              value={orientation} 
-              onChange={(e) => setOrientation(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-gray-500 focus:border-gray-500"
-            >
-              <option value="portrait">Portrait</option>
-              <option value="landscape">Landscape</option>
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Orientation</label>
+            <div className="flex gap-3">
+              <button
+                className={`flex-1 py-2 rounded-md border ${orientation === 'portrait' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setOrientation('portrait')}
+              >
+                Portrait
+              </button>
+              <button
+                className={`flex-1 py-2 rounded-md border ${orientation === 'landscape' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setOrientation('landscape')}
+              >
+                Landscape
+              </button>
+            </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quality</label>
-            <select 
-              value={quality} 
-              onChange={(e) => setQuality(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-gray-500 focus:border-gray-500"
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Quality</label>
+            <div className="flex gap-3">
+              <button
+                className={`flex-1 py-2 rounded-md border ${quality === 'low' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setQuality('low')}
+              >
+                Low
+              </button>
+              <button
+                className={`flex-1 py-2 rounded-md border ${quality === 'medium' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setQuality('medium')}
+              >
+                Medium
+              </button>
+              <button
+                className={`flex-1 py-2 rounded-md border ${quality === 'high' ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => setQuality('high')}
+              >
+                High
+              </button>
+            </div>
           </div>
           
-          <div className="flex items-center">
+          <div className="flex items-center bg-gray-50 p-3 rounded-md">
             <input 
               type="checkbox" 
               id="includeHeader" 
               checked={includeHeader}
               onChange={(e) => setIncludeHeader(e.target.checked)}
-              className="w-4 h-4 text-gray-600 rounded focus:ring-gray-500"
+              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
             />
-            <label htmlFor="includeHeader" className="ml-2 text-sm font-medium text-gray-700">Include page header</label>
+            <label htmlFor="includeHeader" className="ml-2 text-sm font-medium text-gray-700">
+              Include report header with date
+            </label>
           </div>
         </div>
         
         <div className="mt-6 flex justify-end space-x-3">
           <button 
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
           <button 
-            onClick={() => onExport({ pageSize, orientation, quality, includeHeader })}
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-800 flex items-center"
+            onClick={handleExport}
+            disabled={isGenerating}
+            className={`px-6 py-2 text-sm font-medium text-white rounded-md flex items-center transition-colors
+              ${isGenerating ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
-            <Download size={16} className="mr-2" />
-            Export PDF
+            {isGenerating ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download size={16} className="mr-2" />
+                Download PDF
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -298,31 +362,94 @@ const LoadingState = () => (
   </div>
 );
 
+// Improved PDF Generation Feedback Toast
+const PdfGenerationToast = ({ visible, message, status }) => {
+  if (!visible) return null;
+  
+  const statusStyles = {
+    success: "bg-green-500",
+    error: "bg-red-500",
+    progress: "bg-blue-500"
+  };
+  
+  return (
+    <div className={`fixed bottom-4 right-4 ${statusStyles[status] || "bg-gray-700"} text-white py-3 px-4 rounded-md shadow-lg flex items-center z-50 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+      {status === "progress" && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-3"></div>}
+      {status === "success" && <Download size={16} className="mr-3" />}
+      {status === "error" && <AlertTriangle size={16} className="mr-3" />}
+      <span className="text-sm font-medium">{message}</span>
+    </div>
+  );
+};
+
 const AdminAnalytics = () => {
   const { data: analytics, loading, error, refetch } = useApiData('http://localhost:5000/api/admin/analytics');
   const [currentDate] = useState(new Date());
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [pdfToast, setPdfToast] = useState({
+    visible: false,
+    message: "",
+    status: "success" // 'success', 'error', 'progress'
+  });
   const reportRef = useRef();
 
-  // Function to generate PDF with settings
+  // Helper to show and auto-hide toast notifications
+  const showToast = (message, status) => {
+    setPdfToast({
+      visible: true,
+      message,
+      status
+    });
+    
+    // Auto-hide toast after 3 seconds for success/error
+    if (status !== 'progress') {
+      setTimeout(() => {
+        setPdfToast(prev => ({...prev, visible: false}));
+      }, 3000);
+    }
+  };
+
+  // Improved PDF generation with better error handling
   const downloadPDF = async (settings) => {
+    showToast("Preparing PDF for download...", "progress");
+    
     try {
-      const { jsPDF } = await import('jspdf');
-      const { default: html2canvas } = await import('html2canvas');
+      // Dynamically import PDF libraries to reduce initial load time
+      const [jsPdfModule, html2canvasModule] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas')
+      ]);
+      
+      const { jsPDF } = jsPdfModule;
+      const html2canvas = html2canvasModule.default;
       
       const element = reportRef.current;
+      if (!element) {
+        throw new Error("Could not find report content to export");
+      }
+      
+      // Quality scaling options
       const scaleOptions = {
-        low: 1,
-        medium: 2,
-        high: 3
+        low: 1.5,
+        medium: 2.5,
+        high: 3.5
       };
       
+      // Pre-processing notification
+      showToast("Converting dashboard to image...", "progress");
+      
+      // Enhanced rendering quality and options
       const canvas = await html2canvas(element, {
-        scale: scaleOptions[settings.quality] || 2,
+        scale: scaleOptions[settings.quality] || 2.5,
         logging: false,
         useCORS: true,
-        backgroundColor: '#f8fafc' // Match the background color
+        backgroundColor: '#f8fafc', // Match the background color
+        allowTaint: true,
+        removeContainer: true,
+        imageTimeout: 15000 // Increased timeout for large reports
       });
+      
+      showToast("Generating PDF file...", "progress");
       
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF(settings.orientation, 'mm', settings.pageSize);
@@ -333,28 +460,75 @@ const AdminAnalytics = () => {
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = settings.includeHeader ? 20 : 0;
       
-      // Add header if requested
+      // Center image horizontally
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      
+      // Add professional header if requested
+      let imgY = 0;
       if (settings.includeHeader) {
+        imgY = 25; // Make room for header
+        
+        // Add header with logo placeholder
+        pdf.setFillColor(245, 247, 250);
+        pdf.rect(0, 0, pdfWidth, 20, 'F');
+        
+        // Title and date
         pdf.setFontSize(16);
         pdf.setTextColor(50, 50, 50);
         pdf.text('Admin Analytics Report', pdfWidth/2, 10, { align: 'center' });
+        
         pdf.setFontSize(10);
         pdf.setTextColor(100, 100, 100);
         pdf.text(`Generated on ${formatDate(currentDate)}`, pdfWidth/2, 16, { align: 'center' });
+        
+        // Add a subtle separator line
+        pdf.setDrawColor(220, 220, 220);
+        pdf.line(10, 20, pdfWidth - 10, 20);
       }
+
+      // Add page footer
+      const addFooter = () => {
+        const pageCount = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+          pdf.setPage(i);
+          pdf.setFontSize(8);
+          pdf.setTextColor(150, 150, 150);
+          pdf.text(`Page ${i} of ${pageCount}`, pdfWidth/2, pdfHeight - 5, { align: 'center' });
+        }
+      };
       
+      // Add image with calculated dimensions
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(`admin-analytics-${formatDate(currentDate)}.pdf`);
       
+      // Add footer
+      addFooter();
+      
+      // Set appropriate filename with date
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `admin-analytics-report-${timestamp}.pdf`;
+      
+      // Save PDF file
+      pdf.save(filename);
+      
+      // Show success message
+      showToast("PDF successfully downloaded!", "success");
       setIsPdfModalOpen(false);
+      
     } catch (err) {
       console.error('PDF generation failed:', err);
-      alert('Failed to generate PDF. Please try again.');
+      showToast("Failed to generate PDF. Please try again.", "error");
     }
   };
+
+  // Clear toast when component unmounts
+  useEffect(() => {
+    return () => {
+      if (pdfToast.visible) {
+        setPdfToast({visible: false, message: "", status: "success"});
+      }
+    };
+  }, []);
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;
@@ -377,11 +551,11 @@ const AdminAnalytics = () => {
           </button>
           <button
             onClick={() => setIsPdfModalOpen(true)}
-            className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors flex items-center shadow-sm"
-            aria-label="Configure PDF export"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center shadow-sm font-medium"
+            aria-label="Export dashboard as PDF"
           >
-            <FileText className="mr-2" size={16} />
-            Export PDF
+            <Download className="mr-2" size={16} />
+            Download PDF
           </button>
         </div>
       </header>
@@ -413,10 +587,18 @@ const AdminAnalytics = () => {
         <ProductTable products={analytics.stockDetails} title="Product Stock Status" />
       </div>
       
+      {/* Improved PDF settings modal */}
       <PdfSettingsModal 
         isOpen={isPdfModalOpen} 
         onClose={() => setIsPdfModalOpen(false)}
         onExport={downloadPDF}
+      />
+      
+      {/* Toast notification for PDF generation status */}
+      <PdfGenerationToast 
+        visible={pdfToast.visible}
+        message={pdfToast.message}
+        status={pdfToast.status}
       />
     </div>
   );

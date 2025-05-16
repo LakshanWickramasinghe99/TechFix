@@ -1,17 +1,16 @@
 import Sidebar from "./sidebar";
 import { Outlet, useLocation } from "react-router-dom";
-import { Bell, User, Search } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { useState } from "react";
 
 const AdminLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Mobile sidebar overlay */}
       {isMobileMenuOpen && (
         <div
@@ -43,18 +42,9 @@ const AdminLayout = () => {
               </svg>
             </button>
 
-            {/* Search Bar */}
-            <div className="relative flex-1 max-w-md mx-4">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            {/* Empty space for better layout balance */}
+            <div className="lg:ml-0 ml-4 flex-1">
+              {/* Title removed as requested */}
             </div>
 
             {/* Header Right */}
@@ -68,10 +58,10 @@ const AdminLayout = () => {
 
               <div className="relative">
                 <button className="flex items-center text-gray-700 hover:text-gray-900">
-                  <span className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium mr-2">
-                    JS
+                  <span className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium mr-2">
+                    A
                   </span>
-                  <span className="hidden md:block font-medium">John Smith</span>
+                  <span className="hidden md:block font-medium">Admin</span>
                   <svg className="ml-1 h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -81,12 +71,12 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        {/* Dynamic Breadcrumb */}
-        <div className="bg-white border-b border-gray-200 px-6 py-3">
+        {/* Dynamic Breadcrumb with improved design and added spacing */}
+        <div className="bg-white border-b border-gray-200 px-8 py-4">
           <nav className="flex" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-2">
+            <ol className="flex items-center space-x-3">
               <li>
-                <a href="/admin" className="text-gray-500 hover:text-gray-700">Admin</a>
+                <a href="/admin" className="text-indigo-600 hover:text-indigo-800 font-medium">Admin</a>
               </li>
               {pathSegments.slice(1).map((segment, index) => {
                 const url = '/' + pathSegments.slice(0, index + 2).join('/');
@@ -95,10 +85,10 @@ const AdminLayout = () => {
                   .replace(/\b\w/g, l => l.toUpperCase());
                 return (
                   <li className="flex items-center" key={index}>
-                    <svg className="h-4 w-4 text-gray-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-4 w-4 text-gray-400 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <a href={url} className="text-gray-500 hover:text-gray-700 capitalize">{label}</a>
+                    <a href={url} className="text-gray-500 hover:text-indigo-600 capitalize">{label}</a>
                   </li>
                 );
               })}
@@ -106,19 +96,21 @@ const AdminLayout = () => {
           </nav>
         </div>
 
-        {/* Main Page Content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
-          <Outlet />
+        {/* Main Page Content with improved padding and design */}
+        <main className="flex-1 overflow-y-auto p-8 bg-gray-50">
+          <div className="max-w-7xl mx-auto py-4">
+            <Outlet />
+          </div>
         </main>
 
-        {/* Footer */}
-        <footer className="bg-white border-t border-gray-200 p-4">
+        {/* Footer with improved design and spacing */}
+        <footer className="bg-white border-t border-gray-200 p-6">
           <div className="text-center text-sm text-gray-500">
             <p>© 2025 Your Company. All rights reserved.</p>
-            <p className="mt-1">
-              <a href="#" className="text-blue-600 hover:underline mx-2">Privacy Policy</a>
-              <a href="#" className="text-blue-600 hover:underline mx-2">Terms of Service</a>
-              <a href="#" className="text-blue-600 hover:underline mx-2">Contact</a>
+            <p className="mt-2">
+              <a href="#" className="text-indigo-600 hover:underline mx-3">Privacy Policy</a>
+              <a href="#" className="text-indigo-600 hover:underline mx-3">Terms of Service</a>
+              <a href="#" className="text-indigo-600 hover:underline mx-3">Contact</a>
             </p>
           </div>
         </footer>

@@ -1,50 +1,91 @@
-import { Link } from "react-router-dom";
-import { LayoutDashboard, Package, Settings, Users, ShoppingCart, BarChart, HelpCircle, LogOut } from "lucide-react";
+import { useState } from "react";
+import { 
+  LayoutDashboard, 
+  Package, 
+  Settings, 
+  Users, 
+  ShoppingCart, 
+  BarChart, 
+  HelpCircle, 
+  LogOut,
+  Menu,
+  X
+} from "lucide-react";
 
 const Sidebar = () => {
-  return (
-    <div className="w-64 h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col shadow-lg">
-      {/* Header section */}
-      <div className="p-4 border-b border-gray-700">
-        <h2 className="text-2xl font-bold text-center mb-1">Admin Panel</h2>
-        <p className="text-gray-400 text-xs text-center">Welcome back, Admin</p>
-      </div>
+  const [collapsed, setCollapsed] = useState(false);
 
-      {/* Main navigation */}
-      <nav className="flex-1 overflow-y-auto p-4">
-        <div className="mb-6">
-          <p className="text-gray-400 text-xs uppercase tracking-wider mb-2 pl-2">Main</p>
-          <div className="space-y-1">
-          <Link to="/admin/products" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
-              <Package className="w-5 h-5 mr-3 text-yellow-400 group-hover:text-yellow-300" /> 
-              <span className="font-medium">Products</span>
-            </Link>
-            <Link to="/admin/adminviewusers" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
-              <Users className="w-5 h-5 mr-3 text-red-400 group-hover:text-red-300" /> 
-              <span className="font-medium">Users</span>
-            </Link>
-            <Link to="/admin/orders" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
-              <ShoppingCart className="w-5 h-5 mr-3 text-purple-400 group-hover:text-purple-300" /> 
-              <span className="font-medium">Orders</span>
-            </Link>
-            <Link to="/admin/analytics" className="flex items-center p-3 hover:bg-gray-700 rounded-lg transition-colors duration-200 group">
-              <BarChart className="w-5 h-5 mr-3 text-green-400 group-hover:text-green-300" /> 
-              <span className="font-medium">Analytics</span>
-            </Link>
+  // Navigation link component
+  const NavLink = ({ icon, label, href = "#" }) => (
+    <a href={href} className="flex items-center p-3 hover:bg-blue-100 rounded-lg transition-colors duration-200 group">
+      {icon}
+      <span className="font-medium">{label}</span>
+    </a>
+  );
+
+  return (
+    <>
+      {/* Mobile menu toggle - only visible on small screens */}
+      <button 
+        className="fixed top-4 left-4 z-50 p-2 bg-blue-50 rounded-lg shadow-md md:hidden flex items-center justify-center"
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        {collapsed ? <Menu size={20} className="text-blue-600" /> : <X size={20} className="text-blue-600" />}
+      </button>
+      
+      {/* Sidebar - fixed position */}
+      <div className={`fixed top-0 left-0 h-full z-40 transform transition-transform duration-300 ease-in-out ${collapsed ? "-translate-x-full" : "translate-x-0"} md:translate-x-0`}>
+        <div className="w-64 h-screen bg-blue-50 text-gray-700 flex flex-col shadow-md">
+          {/* Header section */}
+          <div className="p-6 border-b border-blue-100">
+            <h2 className="text-xl font-bold text-blue-800 mb-1">Admin Dashboard</h2>
+            <p className="text-gray-500 text-sm">Welcome back, Admin</p>
+          </div>
+
+          {/* Main navigation */}
+          <nav className="flex-1 overflow-y-auto p-4">
+            <div className="mb-6">
+              <p className="text-gray-500 text-xs uppercase tracking-wider mb-3 pl-2 font-semibold">Main Navigation</p>
+              <div className="space-y-1">
+               
+                <NavLink 
+                  icon={<Package className="w-5 h-5 mr-3 text-indigo-600" />}
+                  label="Products"
+                  href="/admin/products"
+                />
+                <NavLink 
+                  icon={<Users className="w-5 h-5 mr-3 text-teal-600" />}
+                  label="Users"
+                  href="/admin/adminviewusers"
+                />
+                <NavLink 
+                  icon={<ShoppingCart className="w-5 h-5 mr-3 text-green-600" />}
+                  label="Orders"
+                  href="/admin/orders"
+                />
+                <NavLink 
+                  icon={<BarChart className="w-5 h-5 mr-3 text-amber-600" />}
+                  label="Analytics"
+                  href="/admin/analytics"
+                />
+              </div>
+            </div>
+
             
+          </nav>
+
+          {/* Footer section */}
+          <div className="p-4 border-t border-blue-100">
+            <a href="/logout" className="flex items-center p-3 bg-white hover:bg-red-50 text-red-600 rounded-lg transition-colors duration-200 justify-center shadow-sm">
+              <LogOut className="w-5 h-5 mr-2" /> 
+              <span className="font-medium">Logout</span>
+            </a>
           </div>
         </div>
-
-      </nav>
-
-      {/* Footer section */}
-      <div className="p-4 border-t border-gray-700">
-        <Link to="/logout" className="flex items-center p-3 hover:bg-red-600 bg-gray-700 rounded-lg transition-colors duration-200 justify-center">
-          <LogOut className="w-5 h-5 mr-2" /> 
-          <span className="font-medium">Logout</span>
-        </Link>
       </div>
-    </div>
+      
+      
+    </>
   );
 };
 
